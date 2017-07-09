@@ -22,7 +22,7 @@ enumerate_paths(dijkstra_shortest_paths(g, 1), 3)
  3
  
 # reweight the edge from 1 to 2
-julia> add_edge!(g, 1, 2, 1.6)
+add_edge!(g, 1, 2, 1.6)
 
 # rerun the shortest path calculation from 1 to 3
 enumerate_paths(dijkstra_shortest_paths(g, 1), 3)
