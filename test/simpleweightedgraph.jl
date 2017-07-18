@@ -47,7 +47,7 @@ importall SimpleWeightedGraphs
         @test @inferred(nv(g)) == 4
         @test @inferred(out_neighbors(g)) == in_neighbors(g)
         @test @inferred(out_neighbors(g,2)) == in_neighbors(g,2) == neighbors(g,2)
-
+        @test @inferred(out_edges(g, 2)) == reverse.(in_edges(g, 2))
         @test @inferred(has_edge(g, 2, 3))
         @test @inferred(has_edge(g, 3, 2))
 
@@ -170,6 +170,7 @@ importall SimpleWeightedGraphs
     end
     g = SimpleWeightedGraph(CompleteGraph(3), 3)
     @test sum(weights(g)) == 2 * ne(g) * 3
+    @test @inferred(get_weight(g, 1, 2)) == 3
 
     g = SimpleWeightedDiGraph(PathGraph(5), 4.0)
     @test sum(weights(g)) == ne(g) * 4.0
