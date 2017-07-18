@@ -9,8 +9,7 @@ import LightGraphs:
     _NI, _insert_and_dedup!, AbstractGraph, AbstractEdge, AbstractEdgeIter,
     src, dst, edgetype, nv, ne, vertices, edges, is_directed,
     add_vertex!, add_edge!, rem_vertex!, rem_edge!,
-    has_vertex, has_edge, in_neighbors, out_neighbors,
-
+    has_vertex, has_edge, in_neighbors, out_neighbors, out_edges, in_edges,
     indegree, outdegree, degree, has_self_loops, num_self_loops,
 
     add_vertices!, adjacency_matrix, weights
@@ -25,6 +24,9 @@ export
     SimpleWeightedDiGraphEdge,
     weight,
     weighttype,
+    get_weight,
+    out_edges,
+    in_edges,
     Graph,
     DiGraph,
     WGraph,
@@ -128,6 +130,24 @@ function out_neighbors(g::AbstractSimpleWeightedGraph, v::Integer)
     mat = g.weights
     return mat.rowval[mat.colptr[v]:mat.colptr[v+1]-1]
 end
+
+get_weight(g::AbstractSimpleWeightedGraph, u::Integer, v::Integer) = g.weights[v, u]
+
+function out_edges(g::AbstractSimpleWeightedGraph, u::Integer)
+    T = eltype(g)
+    mat = g.weights
+    neighs = out_neighbors(g, u)
+    return [SimpleWeightedEdge(T(u), v, get_weight(g, u, v)) for v in neighs]
+end
+
+function in_edges(g::AbstractSimpleWeightedGraph, v::Integer)
+    T = eltype(g)
+    mat = g.weights
+    neighs = in_neighbors(g, v)
+    return [SimpleWeightedEdge(u, T(v), get_weight(g, u, v)) for u in neighs]
+end
+
+
 
 zero(g::T) where T<:AbstractSimpleWeightedGraph = T()
 
