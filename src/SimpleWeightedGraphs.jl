@@ -27,8 +27,6 @@ export
     get_weight,
     out_edges,
     in_edges,
-    Graph,
-    DiGraph,
     WGraph,
     WDiGraph
 
@@ -163,8 +161,6 @@ include("simpleweighteddigraph.jl")
 include("simpleweightedgraph.jl")
 include("overrides.jl")
 
-
-const Graph = SimpleWeightedGraph
 const WGraph = SimpleWeightedGraph
 const WDiGraph = SimpleWeightedDiGraph
 

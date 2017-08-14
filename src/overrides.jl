@@ -10,8 +10,7 @@ function add_vertices!(g::AbstractSimpleWeightedGraph, n::Integer)
     return true
 end
 
-
-function adjacency_matrix(g::AbstractSimpleWeightedGraph, dir::Symbol=:out, T::DataType=Int)
+function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=Int; dir::Symbol=:out)
     if dir == :out
         return T.(spones(g.weights))'
     else
