@@ -10,7 +10,8 @@ testdigraphs(g) = [g, SimpleWeightedDiGraph{UInt8,Float64}(g), SimpleWeightedDiG
 tests = [
     "simpleweightededge",
     "simpleweightedgraph",
-    "overrides"
+    "overrides",
+    "persistence"
 ]
 
 @testset "SimpleWeightedGraphs" begin

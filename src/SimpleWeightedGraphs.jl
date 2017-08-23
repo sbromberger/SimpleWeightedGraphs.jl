@@ -12,7 +12,9 @@ import LightGraphs:
     has_vertex, has_edge, in_neighbors, out_neighbors, out_edges, in_edges,
     indegree, outdegree, degree, has_self_loops, num_self_loops,
 
-    add_vertices!, adjacency_matrix, weights
+    add_vertices!, adjacency_matrix, weights,
+
+    AbstractGraphFormat, loadgraph, loadgraphs, savegraph
 
 export
     AbstractSimpleWeightedGraph,
@@ -28,7 +30,8 @@ export
     out_edges,
     in_edges,
     WGraph,
-    WDiGraph
+    WDiGraph,
+    SWGFormat
 
 include("simpleweightededge.jl")
 
@@ -160,6 +163,7 @@ const SimpleWeightedDiGraphEdge = SimpleWeightedEdge
 include("simpleweighteddigraph.jl")
 include("simpleweightedgraph.jl")
 include("overrides.jl")
+include("persistence.jl")
 
 const WGraph = SimpleWeightedGraph
 const WDiGraph = SimpleWeightedDiGraph
