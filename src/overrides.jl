@@ -18,3 +18,8 @@ function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=Int; dir::
     end
 end
 
+savegraph(fn::AbstractString, g::AbstractSimpleWeightedGraph, gname::AbstractString="graph"; compress=true) =
+    savegraph(fn, g, gname, SWGFormat(), compress=compress)
+
+savegraph(fn::AbstractString, d::Dict{T, U}; compress=true) where T <: AbstractString where U <: AbstractSimpleWeightedGraph = 
+    savegraph(fn, d, SWGFormat(), compress=compress)
