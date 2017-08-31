@@ -14,7 +14,8 @@ import LightGraphs:
 
     add_vertices!, adjacency_matrix, weights,
 
-    AbstractGraphFormat, loadgraph, loadgraphs, savegraph
+    AbstractGraphFormat, loadgraph, loadgraphs, savegraph,
+    pagerank
 
 export
     AbstractSimpleWeightedGraph,

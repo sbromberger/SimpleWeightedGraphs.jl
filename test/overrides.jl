@@ -13,6 +13,10 @@
     for g in testdigraphs(g5)
         @test @inferred(adjacency_matrix(g, Bool)) == adjacency_matrix(g, Bool; dir=:out)
         @test adjacency_matrix(g; dir=:out) == adjacency_matrix(g; dir=:in)'
+        @test @inferred(pagerank(g))[3] ≈ 0.2266 atol=0.001
+        @test length(@inferred(pagerank(g))) == nv(g)
+        @test_throws ErrorException pagerank(g, 2)
+        @test_throws ErrorException pagerank(g, 0.85, 2)
     end
 end
 
