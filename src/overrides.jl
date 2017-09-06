@@ -58,3 +58,33 @@ savegraph(fn::AbstractString, g::AbstractSimpleWeightedGraph, gname::AbstractStr
 
 savegraph(fn::AbstractString, d::Dict{T, U}; compress=true) where T <: AbstractString where U <: AbstractSimpleWeightedGraph = 
     savegraph(fn, d, SWGFormat(), compress=compress)
+
+# Connected Components on a Sparse Matrix
+
+function connected_components(a::SparseMatrixCSC)
+    comp = 0
+    n = size(a, 1)
+    marks = zeros(Int, n)
+    queue = Int[]
+    for i = 1:n
+        if marks[i] == 0
+            comp += 1
+            push!(queue, i)
+            while !isempty(queue)
+                v = pop!(queue)
+                marks[v] = comp
+                for index in nzrange(a,v)
+                    n = a.rowval[index]
+                    if marks[n] == 0
+                        push!(queue, n)
+                    end
+                end
+            end
+        end
+    end
+    cc = [Int[] for i = 1:comp]
+    for (i,v) in enumerate(marks)
+        push!(cc[v], i)
+    end
+    cc
+end
