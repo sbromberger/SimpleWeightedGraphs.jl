@@ -61,7 +61,7 @@ savegraph(fn::AbstractString, d::Dict{T, U}; compress=true) where T <: AbstractS
 
 # Connected Components on a Sparse Matrix
 
-function _cc{T,U}(g::SimpleWeightedGraph{T,U})
+function _cc(g::SimpleWeightedGraph{T,U}) where T where U
     a = weights(g)
     comp = 0
     n = size(a, 1)
@@ -86,13 +86,9 @@ function _cc{T,U}(g::SimpleWeightedGraph{T,U})
     marks, comp
 end
 
-function connected_components{T,U}(g::SimpleWeightedGraph{T,U})
+function connected_components(g::SimpleWeightedGraph{T,U}) where T where U
     marks, num_cc = _cc(g)
-    cc = [T[] for i = 1:num_cc]
-    #=cc = Vector{Vector{T}}()
-    for i = 1:num_cc
-        push!(cc, Vector{T}())
-    end=#
+    cc = [Vector{T}() for i = 1:num_cc]
     for (i,v) in enumerate(marks)
         push!(cc[v], i)
     end
