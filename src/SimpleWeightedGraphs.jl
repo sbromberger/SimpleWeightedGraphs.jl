@@ -12,7 +12,7 @@ import LightGraphs:
     has_vertex, has_edge, in_neighbors, out_neighbors, out_edges, in_edges,
     indegree, outdegree, degree, has_self_loops, num_self_loops,
 
-    add_vertices!, adjacency_matrix, weights,
+    add_vertices!, adjacency_matrix, weights, connected_components
 
     AbstractGraphFormat, loadgraph, loadgraphs, savegraph,
     pagerank
