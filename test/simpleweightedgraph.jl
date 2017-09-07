@@ -175,4 +175,16 @@ importall SimpleWeightedGraphs
     g = SimpleWeightedDiGraph(PathGraph(5), 4.0)
     @test sum(weights(g)) == ne(g) * 4.0
 
+    gx = Graph(4,3)
+    for g in testgraphs(gx)
+        @test eltype(SimpleWeightedGraph(g)) == eltype(g)
+    end
+
+    gx = DiGraph(4,3)
+    for g in testdigraphs(gx)
+        @test eltype(SimpleWeightedGraph(g)) == eltype(g)
+    end
+
+
+
 end

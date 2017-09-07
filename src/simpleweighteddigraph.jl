@@ -39,6 +39,11 @@ function SimpleWeightedDiGraph(g::LightGraphs.SimpleGraphs.AbstractSimpleGraph, 
     return SimpleWeightedDiGraph{T, U}(x.*adjacency_matrix(g, U)')
 end
 
+# SimpleWeightedGraph{T, U}(SimpleGraph)
+function (::Type{SimpleWeightedDiGraph{T, U}})(g::LightGraphs.SimpleGraphs.SimpleDiGraph)  where T<:Integer where U <: Real
+    SimpleWeightedDiGraph{T, U}(adjacency_matrix(LightGraphs.SimpleGraphs.SimpleDiGraph{T}(g), U))
+end
+
 # DiGraph(srcs, dsts, weights)
 SimpleWeightedDiGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}) where T<:Integer where U<:Real =
     SimpleWeightedDiGraph{T, U}(sparse(i,j,v))

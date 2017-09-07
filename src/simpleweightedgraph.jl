@@ -47,6 +47,11 @@ SimpleWeightedGraph(g::LightGraphs.SimpleGraphs.SimpleGraph{T}, x::U) where T <:
 SimpleWeightedGraph(g::LightGraphs.SimpleGraphs.SimpleDiGraph{T}, x::U) where T <: Integer where U <: Real =
     SimpleWeightedGraph{T, U}(x.*adjacency_matrix(LightGraphs.SimpleGraphs.SimpleGraph(g), U))
 
+# SimpleWeightedGraph{T, U}(SimpleGraph)
+function (::Type{SimpleWeightedGraph{T, U}})(g::LightGraphs.SimpleGraphs.SimpleGraph)  where T<:Integer where U <: Real
+    SimpleWeightedGraph{T, U}(adjacency_matrix(LightGraphs.SimpleGraphs.SimpleGraph{T}(g), U))
+end
+
 # DiGraph(srcs, dsts, weights)
 SimpleWeightedGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}) where T<:Integer where U<:Real =
     SimpleWeightedGraph{T, U}(sparse(i,j,v))
