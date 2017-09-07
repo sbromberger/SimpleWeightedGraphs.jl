@@ -1,26 +1,8 @@
-testgraphs(g) = [g, Graph{UInt8}(g), Graph{Int16}(g)]
 const graphs = [
 :bull,
 :chvatal,
-:cubical,
-:desargues,
-:diamond,
-:dodecahedral,
-:frucht,
-:heawood,
-:house,
-:housex,
-:icosahedral,
-:krackhardtkite,
-:moebiuskantor,
-:octahedral,
-:pappus,
-:petersen,
-:sedgewickmaze,
-:tetrahedral,
-:truncatedcube,
-:truncatedtetrahedron,
-:tutte]                    
+:house
+]                    
 @testset "Connectivity" begin
      for s in graphs
          gx = smallgraph(s)
