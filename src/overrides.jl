@@ -61,11 +61,12 @@ savegraph(fn::AbstractString, d::Dict{T, U}; compress=true) where T <: AbstractS
 
 # Connected Components on a Sparse Matrix
 
-function connected_components(a::SparseMatrixCSC)
+function _cc{T,U}(g::SimpleWeightedGraph{T,U})
+    a = weights(g)
     comp = 0
     n = size(a, 1)
-    marks = zeros(Int, n)
-    queue = Int[]
+    marks = zeros(T, n)
+    queue = Vector{T}()
     for i = 1:n
         if marks[i] == 0
             comp += 1
@@ -82,7 +83,16 @@ function connected_components(a::SparseMatrixCSC)
             end
         end
     end
-    cc = [Int[] for i = 1:comp]
+    marks, comp
+end
+
+function connected_components{T,U}(g::SimpleWeightedGraph{T,U})
+    marks, num_cc = _cc(g)
+    cc = [T[] for i = 1:num_cc]
+    #=cc = Vector{Vector{T}}()
+    for i = 1:num_cc
+        push!(cc, Vector{T}())
+    end=#
     for (i,v) in enumerate(marks)
         push!(cc[v], i)
     end
