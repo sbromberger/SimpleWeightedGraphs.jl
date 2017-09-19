@@ -3,7 +3,7 @@
 
 A type representing a directed graph with weights of type `U`.
 """
-mutable struct SimpleWeightedDiGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph
+mutable struct SimpleWeightedDiGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
     weights::SparseMatrixCSC{U, T} # indexed by [dst, src]
 end
 

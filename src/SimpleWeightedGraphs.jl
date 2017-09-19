@@ -43,18 +43,18 @@ An abstract type representing a simple graph structure.
 AbstractSimpleWeightedGraphs must have the following elements:
 - weightmx::AbstractSparseMatrix{Real}
 """
-abstract type AbstractSimpleWeightedGraph <: AbstractGraph end
+abstract type AbstractSimpleWeightedGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
 
-function show(io::IO, g::AbstractSimpleWeightedGraph)
+function show(io::IO, g::AbstractSimpleWeightedGraph{T, U}) where T where U
     if is_directed(g)
         dir = "directed"
     else
         dir = "undirected"
     end
     if nv(g) == 0
-        print(io, "empty $dir simple $(eltype(g)) graph with $(weighttype(g)) weights")
+        print(io, "empty $dir simple $T graph with $U weights")
     else
-        print(io, "{$(nv(g)), $(ne(g))} $dir simple $(eltype(g)) graph with $(weighttype(g)) weights")
+        print(io, "{$(nv(g)), $(ne(g))} $dir simple $T graph with $U weights")
     end
 end
 
@@ -67,17 +67,17 @@ convert(::Type{SparseMatrixCSC{T, U}}, g::AbstractSimpleWeightedGraph) where T<:
 
 ### INTERFACE
 
-nv(g::AbstractSimpleWeightedGraph) = eltype(g)(size(g.weights, 1))
-vertices(g::AbstractSimpleWeightedGraph) = one(eltype(g)):nv(g)
-eltype(x::AbstractSimpleWeightedGraph) = eltype(rowvals(x.weights))
-weighttype(x::AbstractSimpleWeightedGraph) = eltype(x.weights)
+nv(g::AbstractSimpleWeightedGraph{T, U}) where T where U = T(size(g.weights, 1))
+vertices(g::AbstractSimpleWeightedGraph{T, U}) where T where U = one(T):nv(g)
+eltype(x::AbstractSimpleWeightedGraph{T, U}) where T where U = T
+weighttype(x::AbstractSimpleWeightedGraph{T, U}) where T where U = U
 
-has_edge(g::AbstractSimpleWeightedGraph, e::AbstractSimpleWeightedEdge) =
-    g.weights[dst(e), src(e)] != zero(weighttype(g))
+has_edge(g::AbstractSimpleWeightedGraph{T, U}, e::AbstractSimpleWeightedEdge) where T where U =
+    g.weights[dst(e), src(e)] != zero(U)
 
 # handles single-argument edge constructors such as pairs and tuples
-has_edge(g::AbstractSimpleWeightedGraph, x) = has_edge(g, edgetype(g)(x))
-add_edge!(g::AbstractSimpleWeightedGraph, x) = add_edge!(g, edgetype(g)(x))
+has_edge(g::AbstractSimpleWeightedGraph{T, U}, x) where T where U = has_edge(g, edgetype(g)(x))
+add_edge!(g::AbstractSimpleWeightedGraph{T, U}, x) where T where U = add_edge!(g, edgetype(g)(x))
 
 # handles two-argument edge constructors like src,dst
 has_edge(g::AbstractSimpleWeightedGraph, x, y) = has_edge(g, edgetype(g)(x, y, 0))
@@ -92,10 +92,8 @@ end
 
 has_vertex(g::AbstractSimpleWeightedGraph, v::Integer) = v in vertices(g)
 
-function rem_edge!(g::AbstractSimpleWeightedGraph, u::Integer, v::Integer)
+function rem_edge!(g::AbstractSimpleWeightedGraph{T, U}, u::Integer, v::Integer) where T where U
     warn("Note: removing edges from this graph type is not performant.", once=true)
-    T = eltype(g)
-    U = weighttype(g)
     rem_edge!(g, edgetype(g)(T(u), T(v), one(U)))
 end
 
