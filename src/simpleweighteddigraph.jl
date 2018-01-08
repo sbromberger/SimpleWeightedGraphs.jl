@@ -46,7 +46,7 @@ end
 
 # DiGraph(srcs, dsts, weights)
 SimpleWeightedDiGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}) where T<:Integer where U<:Real =
-    SimpleWeightedDiGraph{T, U}(sparse(i,j,v))
+    SimpleWeightedDiGraph{T, U}(sparse(j,i,v))
 
 
 # Graph{UInt8}(adjmx)
