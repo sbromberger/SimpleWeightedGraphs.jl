@@ -45,9 +45,10 @@ function (::Type{SimpleWeightedDiGraph{T, U}})(g::LightGraphs.SimpleGraphs.Simpl
 end
 
 # DiGraph(srcs, dsts, weights)
-SimpleWeightedDiGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}) where T<:Integer where U<:Real =
-    SimpleWeightedDiGraph{T, U}(sparse(i,j,v))
-
+function SimpleWeightedDiGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}) where T<:Integer where U<:Real
+    m = max(maximum(j), maximum(i))
+    SimpleWeightedDiGraph{T, U}(sparse(j, i, v, m, m))
+end
 
 # Graph{UInt8}(adjmx)
 # function (::Type{SimpleWeightedDiGraph{T, U}})(adjmx::AbstractMatrix) where T<:Integer where U <: Real

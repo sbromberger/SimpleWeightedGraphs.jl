@@ -53,8 +53,11 @@ function (::Type{SimpleWeightedGraph{T, U}})(g::LightGraphs.SimpleGraphs.SimpleG
 end
 
 # DiGraph(srcs, dsts, weights)
-SimpleWeightedGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}) where T<:Integer where U<:Real =
-    SimpleWeightedGraph{T, U}(sparse(i,j,v))
+function SimpleWeightedGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}) where T<:Integer where U<:Real
+    m = max(maximum(i), maximum(j))
+    s = sparse(vcat(i,j), vcat(j,i), vcat(v,v), m, m)
+    SimpleWeightedGraph{T, U}(s)
+end
 # Graph{UInt8}(adjmx)
 # function (::Type{SimpleWeightedGraph{T, U}})(adjmx::AbstractMatrix) where T<:Integer where U <: Real
 #     dima,dimb = size(adjmx)

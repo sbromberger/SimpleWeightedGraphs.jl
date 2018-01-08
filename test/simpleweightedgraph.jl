@@ -185,6 +185,20 @@ importall SimpleWeightedGraphs
         @test eltype(SimpleWeightedGraph(g)) == eltype(g)
     end
 
+    s = SimpleWeightedGraph(PathGraph(5), 2)
+    s2 = SimpleWeightedGraph([1,2,3,4], [2,3,4,5], [2,2,2,2])
+    @test s == s2
+
+    s = SimpleWeightedDiGraph(PathDiGraph(5), 2)
+    s2 = SimpleWeightedDiGraph([1,2,3,4], [2,3,4,5], [2,2,2,2])
+    @test s == s2
+
+    s = SimpleWeightedGraph([10,20,30,40], [20,30,40,50], [2,2,2,2])
+    @test size(s.weights) == (50, 50)
+
+    s = SimpleWeightedDiGraph([10,20,30,40], [20,30,40,50], [2,2,2,2])
+    @test size(s.weights) == (50, 50)
+
 
 
 end
