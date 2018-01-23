@@ -46,16 +46,8 @@ AbstractSimpleWeightedGraphs must have the following elements:
 abstract type AbstractSimpleWeightedGraph{T<:Integer,U<:Real} <: AbstractGraph{T} end
 
 function show(io::IO, g::AbstractSimpleWeightedGraph{T, U}) where T where U
-    if is_directed(g)
-        dir = "directed"
-    else
-        dir = "undirected"
-    end
-    if nv(g) == 0
-        print(io, "empty $dir simple $T graph with $U weights")
-    else
-        print(io, "{$(nv(g)), $(ne(g))} $dir simple $T graph with $U weights")
-    end
+    dir = is_directed(g) ? "directed" : "undirected"
+    print(io, "{$(nv(g)), $(ne(g))} $dir simple $T graph with $U weights")
 end
 
 # conversion to SparseMatrixCSC
