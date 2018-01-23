@@ -27,7 +27,7 @@ importall SimpleWeightedGraphs
     for g in testgraphs(gx)
         T = eltype(g)
         U = weighttype(g)
-        @test sprint(show, g) == "empty undirected simple $T graph with $U weights"
+        @test sprint(show, g) == "{0, 0} undirected simple $T graph with $U weights"
         @inferred(add_vertices!(g, 5))
         @test sprint(show, g) == "{5, 0} undirected simple $T graph with $U weights"
     end
@@ -35,7 +35,7 @@ importall SimpleWeightedGraphs
     for g in testdigraphs(gx)
         T = eltype(g)
         U = weighttype(g)
-        @test sprint(show, g) == "empty directed simple $T graph with $U weights"
+        @test sprint(show, g) == "{0, 0} directed simple $T graph with $U weights"
         @inferred(add_vertices!(g, 5))
         @test sprint(show, g) == "{5, 0} directed simple $T graph with $U weights"
     end
