@@ -89,7 +89,7 @@ edgetype(::SimpleWeightedGraph{T, U}) where T<:Integer where U<:Real= SimpleWeig
 
 edges(g::SimpleWeightedGraph) = (SimpleWeightedEdge(x[1], x[2], x[3]) for x in zip(findnz(triu(g.weights))...))
 weights(g::SimpleWeightedGraph) = g.weights
-in_neighbors(g::SimpleWeightedGraph, x...) = out_neighbors(g, x...)
+inneighbors(g::SimpleWeightedGraph, x...) = outneighbors(g, x...)
 
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedGraph, e::SimpleWeightedGraphEdge)
