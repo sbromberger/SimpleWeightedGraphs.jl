@@ -45,8 +45,8 @@ importall SimpleWeightedGraphs
         @test @inferred(vertices(g)) == 1:4
         @test SimpleWeightedEdge(2,3) in edges(g)
         @test @inferred(nv(g)) == 4
-        @test @inferred(out_neighbors(g)) == in_neighbors(g)
-        @test @inferred(out_neighbors(g,2)) == in_neighbors(g,2) == neighbors(g,2)
+        @test @inferred(outneighbors(g)) == inneighbors(g)
+        @test @inferred(outneighbors(g,2)) == inneighbors(g,2) == neighbors(g,2)
         @test @inferred(out_edges(g, 2)) == reverse.(in_edges(g, 2))
         @test @inferred(has_edge(g, 2, 3))
         @test @inferred(has_edge(g, 3, 2))
@@ -60,7 +60,7 @@ importall SimpleWeightedGraphs
         gc = copy(g)
         @test add_edge!(gc, 4, 1) && gc == SimpleWeightedGraph(CycleGraph(4))
 
-        @test @inferred(in_neighbors(g, 2)) == @inferred(out_neighbors(g, 2)) == @inferred(neighbors(g,2)) == [1,3]
+        @test @inferred(inneighbors(g, 2)) == @inferred(outneighbors(g, 2)) == @inferred(neighbors(g,2)) == [1,3]
         @test @inferred(add_vertex!(gc))   # out of order, but we want it for issubset
         @test @inferred(g ⊆ gc)
         @test @inferred(has_vertex(gc, 5))
@@ -76,7 +76,7 @@ importall SimpleWeightedGraphs
 
         # concrete tests below
 
-        @test @inferred(eltype(g)) == eltype(out_neighbors(g,1)) == eltype(nv(g))
+        @test @inferred(eltype(g)) == eltype(outneighbors(g,1)) == eltype(nv(g))
         T = @inferred(eltype(g))
         U = @inferred(weighttype(g))
         @test @inferred(nv(SimpleWeightedGraph{T, U}(6))) == 6
@@ -106,8 +106,8 @@ importall SimpleWeightedGraphs
         @test SimpleWeightedEdge(2,3) in edges(g)
         @test !(SimpleWeightedEdge(3,2) in edges(g))
         @test @inferred(nv(g)) == 4
-        @test @inferred(out_neighbors(g)[2]) == out_neighbors(g, 2) == [3]
-        @test @inferred(in_neighbors(g)[2]) == in_neighbors(g, 2) == [1]
+        @test @inferred(outneighbors(g)[2]) == outneighbors(g, 2) == [3]
+        @test @inferred(inneighbors(g)[2]) == inneighbors(g, 2) == [1]
 
         @test @inferred(has_edge(g, 2, 3))
         @test @inferred(!has_edge(g, 3, 2))
@@ -121,8 +121,8 @@ importall SimpleWeightedGraphs
         gc = @inferred(copy(g))
         @test @inferred(add_edge!(gc, 4, 1)) && gc == SimpleWeightedDiGraph(CycleDiGraph(4))
 
-        @test @inferred(in_neighbors(g, 2)) == [1]
-        @test @inferred(out_neighbors(g, 2)) == @inferred(neighbors(g,2)) == [3]
+        @test @inferred(inneighbors(g, 2)) == [1]
+        @test @inferred(outneighbors(g, 2)) == @inferred(neighbors(g,2)) == [3]
         @test @inferred(add_vertex!(gc))   # out of order, but we want it for issubset
         @test @inferred(g ⊆ gc)
         @test @inferred(has_vertex(gc, 5))
@@ -139,7 +139,7 @@ importall SimpleWeightedGraphs
 
         # concrete tests below
 
-        @test @inferred(eltype(g)) == eltype(@inferred(out_neighbors(g,1))) == eltype(nv(g))
+        @test @inferred(eltype(g)) == eltype(@inferred(outneighbors(g,1))) == eltype(nv(g))
         T = @inferred(eltype(g))
         U = @inferred(weighttype(g))
         @test @inferred(nv(SimpleWeightedDiGraph{T, U}(6))) == 6
