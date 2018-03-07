@@ -47,7 +47,6 @@ importall SimpleWeightedGraphs
         @test @inferred(nv(g)) == 4
         @test @inferred(outneighbors(g)) == inneighbors(g)
         @test @inferred(outneighbors(g,2)) == inneighbors(g,2) == neighbors(g,2)
-        @test @inferred(out_edges(g, 2)) == reverse.(in_edges(g, 2))
         @test @inferred(has_edge(g, 2, 3))
         @test @inferred(has_edge(g, 3, 2))
 
