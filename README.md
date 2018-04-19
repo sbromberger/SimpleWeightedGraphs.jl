@@ -29,4 +29,19 @@ enumerate_paths(dijkstra_shortest_paths(g, 1), 3)
 2-element Array{Int64,1}:
  1
  3
+
+# it's possible to build the graph from arrays of sources, destinations and weights
+sources = [1,2,1]
+destinations = [2,3,3]
+weights = [0.5, 0.8, 2.0]
+g = SimpleWeightedGraph(sources, destinations, weights)
+
+# the combine keyword handles repeated pairs (sum by default)
+g = SimpleWeightedGraph([1,2,1], [2,1,2], [1,1,1]; combine = +)
+g.weights[2,1] == g.weights[1,2] == 3 # true
+
+# notice that weights are indexed by [destination, source]
+s = SimpleWeightedDiGraph([1,2,1], [2,1,2], [1,1,1]; combine = +)
+s.weights[1,2] == 1 # true
+s.weights[2,1] == 2 # true
 ```
