@@ -40,6 +40,8 @@ g = SimpleWeightedGraph(sources, destinations, weights)
 g = SimpleWeightedGraph([1,2,1], [2,1,2], [1,1,1]; combine = +)
 g.weights[2,1] == g.weights[1,2] == 3 # true
 
+# WARNING: unexpected results might occur with non-associative combine functions
+
 # notice that weights are indexed by [destination, source]
 s = SimpleWeightedDiGraph([1,2,1], [2,1,2], [1,1,1]; combine = +)
 s.weights[1,2] == 1 # true
