@@ -198,6 +198,15 @@ importall SimpleWeightedGraphs
     s = SimpleWeightedDiGraph([10,20,30,40], [20,30,40,50], [2,2,2,2])
     @test size(s.weights) == (50, 50)
 
+    s = SimpleWeightedGraph([1,2,1], [2,1,2], [1,1,1]; combine = +)
+    @test s.weights[2,1] == s.weights[1,2] == 3
 
+    s = SimpleWeightedDiGraph([1,2,1], [2,1,2], [1,1,1]; combine = +)
+    @test s.weights[1,2] == 1
+    @test s.weights[2,1] == 2
+
+    s = SimpleWeightedDiGraph([1,2,1], [2,1,2], [1,1,2]; combine = (x,y) -> y)
+    @test s.weights[1,2] == 1
+    @test s.weights[2,1] == 2
 
 end
