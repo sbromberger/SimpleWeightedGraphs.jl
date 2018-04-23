@@ -205,4 +205,8 @@ importall SimpleWeightedGraphs
     @test s.weights[1,2] == 1
     @test s.weights[2,1] == 2
 
+    s = SimpleWeightedDiGraph([1,2,1], [2,1,2], [1,1,2]; combine = (x,y) -> y)
+    @test s.weights[1,2] == 1
+    @test s.weights[2,1] == 2
+
 end
