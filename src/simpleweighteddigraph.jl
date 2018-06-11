@@ -10,7 +10,7 @@ end
 ne(g::SimpleWeightedDiGraph) = nnz(g.weights)
 
 # Graph{UInt8}(6), Graph{Int16}(7), Graph{UInt8}()
-function (::Type{SimpleWeightedDiGraph{T, U}})(n::Integer = 0) where T<:Integer where U<:Real
+function SimpleWeightedDiGraph{T, U}(n::Integer = 0) where T<:Integer where U<:Real
     weights = spzeros(U, T, T(n), T(n))
     return SimpleWeightedDiGraph{T, U}(weights)
 end
@@ -40,7 +40,7 @@ function SimpleWeightedDiGraph(g::LightGraphs.SimpleGraphs.AbstractSimpleGraph, 
 end
 
 # SimpleWeightedGraph{T, U}(SimpleGraph)
-function (::Type{SimpleWeightedDiGraph{T, U}})(g::LightGraphs.SimpleGraphs.SimpleDiGraph)  where T<:Integer where U <: Real
+function SimpleWeightedDiGraph{T, U}(g::LightGraphs.SimpleGraphs.SimpleDiGraph)  where T<:Integer where U <: Real
     SimpleWeightedDiGraph{T, U}(adjacency_matrix(LightGraphs.SimpleGraphs.SimpleDiGraph{T}(g), U))
 end
 

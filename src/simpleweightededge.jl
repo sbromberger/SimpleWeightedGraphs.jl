@@ -29,7 +29,7 @@ show(io::IO, e::AbstractSimpleWeightedEdge) = print(io, "Edge $(e.src) => $(e.ds
 # Conversions
 Tuple(e::AbstractSimpleWeightedEdge) = (src(e), dst(e), weight(e))
 
-(::Type{SimpleWeightedEdge{T, U}}){T<:Integer, U<:Real}(e::AbstractSimpleWeightedEdge) = SimpleWeightedEdge{T, U}(T(e.src), T(e.dst), U(e.weight))
+SimpleWeightedEdge{T, U}(e::AbstractSimpleWeightedEdge) where {T<:Integer, U<:Real} = SimpleWeightedEdge{T, U}(T(e.src), T(e.dst), U(e.weight))
 
 # Convenience functions - note that these do not use weight.
 reverse(e::T) where T<:AbstractSimpleWeightedEdge = T(dst(e), src(e), weight(e))
