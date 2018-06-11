@@ -45,9 +45,9 @@ function (::Type{SimpleWeightedDiGraph{T, U}})(g::LightGraphs.SimpleGraphs.Simpl
 end
 
 # DiGraph(srcs, dsts, weights)
-function SimpleWeightedDiGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}) where T<:Integer where U<:Real
+function SimpleWeightedDiGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}; combine = +) where T<:Integer where U<:Real
     m = max(maximum(j), maximum(i))
-    SimpleWeightedDiGraph{T, U}(sparse(j, i, v, m, m))
+    SimpleWeightedDiGraph{T, U}(sparse(j, i, v, m, m, combine))
 end
 
 # Graph{UInt8}(adjmx)
@@ -76,12 +76,12 @@ edgetype(::SimpleWeightedDiGraph{T, U}) where T<:Integer where U<:Real = SimpleW
 
 edges(g::SimpleWeightedDiGraph) = (SimpleWeightedEdge(x[2], x[1], x[3]) for x in zip(findnz(g.weights)...))
 weights(g::SimpleWeightedDiGraph) = g.weights'
-function in_neighbors(g::SimpleWeightedDiGraph)
+function inneighbors(g::SimpleWeightedDiGraph)
     mat = g.weights'
     return [mat.rowval[mat.colptr[i]:mat.colptr[i + 1] - 1] for i in 1:nv(g)]
 end
 
-function in_neighbors(g::SimpleWeightedDiGraph, v::Integer)
+function inneighbors(g::SimpleWeightedDiGraph, v::Integer)
     mat = g.weights'
     return mat.rowval[mat.colptr[v]:mat.colptr[v + 1] - 1]
 end

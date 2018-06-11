@@ -53,9 +53,9 @@ function (::Type{SimpleWeightedGraph{T, U}})(g::LightGraphs.SimpleGraphs.SimpleG
 end
 
 # DiGraph(srcs, dsts, weights)
-function SimpleWeightedGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}) where T<:Integer where U<:Real
+function SimpleWeightedGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}; combine = +) where T<:Integer where U<:Real
     m = max(maximum(i), maximum(j))
-    s = sparse(vcat(i,j), vcat(j,i), vcat(v,v), m, m)
+    s = sparse(vcat(i,j), vcat(j,i), vcat(v,v), m, m, combine)
     SimpleWeightedGraph{T, U}(s)
 end
 # Graph{UInt8}(adjmx)
@@ -89,7 +89,7 @@ edgetype(::SimpleWeightedGraph{T, U}) where T<:Integer where U<:Real= SimpleWeig
 
 edges(g::SimpleWeightedGraph) = (SimpleWeightedEdge(x[1], x[2], x[3]) for x in zip(findnz(triu(g.weights))...))
 weights(g::SimpleWeightedGraph) = g.weights
-in_neighbors(g::SimpleWeightedGraph, x...) = out_neighbors(g, x...)
+inneighbors(g::SimpleWeightedGraph, x...) = outneighbors(g, x...)
 
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedGraph, e::SimpleWeightedGraphEdge)
