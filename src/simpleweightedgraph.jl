@@ -102,6 +102,11 @@ function add_edge!(g::SimpleWeightedGraph, e::SimpleWeightedGraphEdge)
     (s in vertices(g) && d in vertices(g)) || return false
     g.weights[d, s] = w
     g.weights[s, d] = w
+	
+    if w == zero(U)
+        warn("Note: adding edges with a zero weight to this graph type has no effect.", once=true)
+    end
+	
     return true
 end
 
