@@ -94,7 +94,7 @@ function add_edge!(g::SimpleWeightedDiGraph, e::SimpleWeightedGraphEdge)
     s_, d_, w = Tuple(e)
 	
     if w == zero(U)
-        warn("Note: adding edges with a zero weight to this graph type has no effect.", once=true, key=:swd_add_edge_zero))
+        warn("Note: adding edges with a zero weight to this graph type has no effect.", once=true, key=:swd_add_edge_zero)
         return false
     end
 	
