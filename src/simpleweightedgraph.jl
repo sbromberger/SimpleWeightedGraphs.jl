@@ -97,16 +97,17 @@ function add_edge!(g::SimpleWeightedGraph, e::SimpleWeightedGraphEdge)
     T = eltype(g)
     U = weighttype(g)
     s_, d_, w = Tuple(e)
+	
+    if w == zero(U)
+        warn("Note: adding edges with a zero weight to this graph type has no effect.", once=true)
+        return false
+    end
+	
     s = T(s_)
     d = T(d_)
     (s in vertices(g) && d in vertices(g)) || return false
     g.weights[d, s] = w
     g.weights[s, d] = w
-	
-    if w == zero(U)
-        warn("Note: adding edges with a zero weight to this graph type has no effect.", once=true)
-    end
-	
     return true
 end
 
