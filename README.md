@@ -47,3 +47,7 @@ s = SimpleWeightedDiGraph([1,2,1], [2,1,2], [1,1,1]; combine = +)
 s.weights[1,2] == 1 # true
 s.weights[2,1] == 2 # true
 ```
+
+Please pay attention to the fact that zero-weight edges are discarded by `add_edge!`. 
+This is due to the way the graph is stored (a sparse matrix). [A possible workaround 
+is to set a very small weight instead](https://stackoverflow.com/questions/48977068/how-to-add-free-edge-to-graph-in-lightgraphs-julia/48994712#48994712). 
