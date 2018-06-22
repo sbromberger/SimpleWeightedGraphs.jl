@@ -43,7 +43,7 @@ importall SimpleWeightedGraphs
     gx = SimpleWeightedGraph(PathGraph(4))
 
     gc = copy(gx)
-    @test_warn add_edge!(gc, 4, 1, 0.0)
+    @test_warn "Note: adding edges with a zero weight to this graph type has no effect." add_edge!(gc, 4, 1, 0.0)
     @test !(add_edge!(gc, 4, 1, 0.0))
 
     for g in testgraphs(gx)
@@ -107,7 +107,7 @@ importall SimpleWeightedGraphs
     gdx = SimpleWeightedDiGraph(PathDiGraph(4))
 		
 	gc = copy(gdx)
-	@test_warn add_edge!(gc, 4, 1, 0.0)
+	@test_warn "Note: adding edges with a zero weight to this graph type has no effect." add_edge!(gc, 4, 1, 0.0)
 	@test !(add_edge!(gc, 4, 1, 0.0))
 	
     for g in testdigraphs(gdx)
