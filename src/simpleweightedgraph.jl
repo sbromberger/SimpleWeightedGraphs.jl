@@ -63,7 +63,7 @@ end
 #     dima,dimb = size(adjmx)
 #     isequal(dima,dimb) || error("Adjacency / distance matrices must be square")
 #     issymmetric(adjmx) || error("Adjacency / distance matrices must be symmetric")
-#     g = SimpleWeightedGraph(U.(spones(adjmx)))
+#     g = SimpleWeightedGraph(U.(LinearAlgebra.fillstored!(copy(adjmx), 1)))
 # end
 
 # converts Graph{Int} to Graph{Int32}
@@ -93,16 +93,16 @@ inneighbors(g::SimpleWeightedGraph, x...) = outneighbors(g, x...)
 
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedGraph, e::SimpleWeightedGraphEdge)
-    warn("Note: adding edges to this graph type is not performant.", once=true, key=:swg_add_edge)
+    @warn "Note: adding edges to this graph type is not performant." maxlog=1 _id=:swg_add_edge
     T = eltype(g)
     U = weighttype(g)
     s_, d_, w = Tuple(e)
-	
+
     if w == zero(U)
-        warn("Note: adding edges with a zero weight to this graph type has no effect.", once=true, key=:swg_add_edge_zero)
+        @warn "Note: adding edges with a zero weight to this graph type has no effect." maxlog=1 _id=:swg_add_edge_zero
         return false
     end
-	
+
     s = T(s_)
     d = T(d_)
     (s in vertices(g) && d in vertices(g)) || return false

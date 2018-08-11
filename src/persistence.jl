@@ -29,7 +29,7 @@ struct SWGHeader
     code::String
 end
 function show(io::IO, h::SWGHeader)
-    isdir = h.is_directed? "d" : "u"
+    isdir = h.is_directed ? "d" : "u"
     print(io, "$FIXEDSTR,$(h.nv),$(h.ne),$isdir,$(h.name),$(h.ver),$(h.vdtype),$(h.wdtype),$(h.code)")
 end
 
@@ -73,7 +73,7 @@ function _parse_header(s::AbstractString)
     ver = parse(Int, _ver)
     vdtype = eval(Symbol(_vdtype))
     wdtype = eval(Symbol(_wdtype))
-    
+
     return SWGHeader(n_v, n_e, directed, graphname, ver, vdtype, wdtype, graphcode)
 end
 

@@ -55,7 +55,7 @@ end
 #     dima,dimb = size(adjmx)
 #     isequal(dima,dimb) || error("Adjacency / distance matrices must be square")
 #     issymmetric(adjmx) || error("Adjacency / distance matrices must be symmetric")
-#     g = SimpleWeightedDiGraph(U.(spones(adjmx)))
+#     g = SimpleWeightedDiGraph(U.(LinearAlgebra.fillstored!(copy(adjmx), 1)))
 # end
 
 # converts Graph{Int} to Graph{Int32}
@@ -77,27 +77,27 @@ edgetype(::SimpleWeightedDiGraph{T, U}) where T<:Integer where U<:Real = SimpleW
 edges(g::SimpleWeightedDiGraph) = (SimpleWeightedEdge(x[2], x[1], x[3]) for x in zip(findnz(g.weights)...))
 weights(g::SimpleWeightedDiGraph) = g.weights'
 function inneighbors(g::SimpleWeightedDiGraph)
-    mat = g.weights'
+    mat = SparseMatrixCSC(g.weights')
     return [mat.rowval[mat.colptr[i]:mat.colptr[i + 1] - 1] for i in 1:nv(g)]
 end
 
 function inneighbors(g::SimpleWeightedDiGraph, v::Integer)
-    mat = g.weights'
+    mat = SparseMatrixCSC(g.weights')
     return mat.rowval[mat.colptr[v]:mat.colptr[v + 1] - 1]
 end
 
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedDiGraph, e::SimpleWeightedGraphEdge)
-    warn("Note: adding edges to this graph type is not performant.", once=true, key=:swd_add_edge)
+    @warn "Note: adding edges to this graph type is not performant." maxlog=1 _id=:swd_add_edge
     T = eltype(g)
     U = weighttype(g)
     s_, d_, w = Tuple(e)
-	
+
     if w == zero(U)
-        warn("Note: adding edges with a zero weight to this graph type has no effect.", once=true, key=:swd_add_edge_zero)
+        @warn "Note: adding edges with a zero weight to this graph type has no effect." maxlog=1 _id=:swd_add_edge_zero
         return false
     end
-	
+
     s = T(s_)
     d = T(d_)
     (s in vertices(g) && d in vertices(g)) || return false
