@@ -6,7 +6,7 @@ using Markdown
 using SparseArrays
 
 import Base:
-    convert, eltype, show, ==, Pair, Tuple, copy, length, start, next, done, issubset, zero
+    convert, eltype, show, ==, Pair, Tuple, copy, length, issubset, zero
 
 import LightGraphs:
     _NI, AbstractGraph, AbstractEdge, AbstractEdgeIter,

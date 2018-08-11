@@ -185,12 +185,12 @@ using SimpleWeightedGraphs
     @test sum(weights(g)) == ne(g) * 4.0
 
     gx = Graph(4,3)
-    for g in testgraphs(gx)
+    for g in testsimplegraphs(gx)
         @test eltype(SimpleWeightedGraph(g)) == eltype(g)
     end
 
     gx = DiGraph(4,3)
-    for g in testdigraphs(gx)
+    for g in testsimpledigraphs(gx)
         @test eltype(SimpleWeightedGraph(g)) == eltype(g)
     end
 
