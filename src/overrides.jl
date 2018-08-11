@@ -12,17 +12,17 @@ end
 
 function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=Int; dir::Symbol=:out)
     if dir == :out
-        return T.(spones(g.weights))'
+        return SparseMatrixCSC(T.(LinearAlgebra.fillstored!(copy(g.weights), 1))')
     else
-        return T.(spones(g.weights))
+        return T.(LinearAlgebra.fillstored!(copy(g.weights), 1))
     end
 end
 
 function pagerank(g::SimpleWeightedDiGraph, α=0.85, n=100::Integer, ϵ=1.0e-6)
     A = weights(g)
-    S = vec(sum(A, 1))
+    S = vec(sum(A, dims=1))
     S = 1 ./ S
-    S[find(S .== Inf)] = 0.0
+    S[findall(S .== Inf)] .= 0.0
     M = A'  # need a separate line due to bug #17456 in julia
     # scaling the adjmat to stochastic adjacency matrix
     M = (Diagonal(S) * M)'
@@ -35,13 +35,13 @@ function pagerank(g::SimpleWeightedDiGraph, α=0.85, n=100::Integer, ϵ=1.0e-6)
     y = zeros(Float64, N)
     # adjustment for leaf nodes in digraph
     dangling_weights = p
-    is_dangling = find(S .== 0)
+    is_dangling = findall(S .== 0)
     # save some flops by precomputing this
     pscaled = (1 .- α) .* p
     for _ in 1:n
         xlast = x
         # in place SpMV to conserve memory
-        A_mul_B!(y, M, x)
+        mul!(y, M, x)
         # using broadcast to avoid temporaries
         x = α .* (y .+ sum(x[is_dangling]) .* dangling_weights) .+ pscaled
         # l1 change in solution convergence criterion
@@ -56,7 +56,7 @@ end
 savegraph(fn::AbstractString, g::AbstractSimpleWeightedGraph, gname::AbstractString="graph"; compress=true) =
     savegraph(fn, g, gname, SWGFormat(), compress=compress)
 
-savegraph(fn::AbstractString, d::Dict{T, U}; compress=true) where T <: AbstractString where U <: AbstractSimpleWeightedGraph = 
+savegraph(fn::AbstractString, d::Dict{T, U}; compress=true) where T <: AbstractString where U <: AbstractSimpleWeightedGraph =
     savegraph(fn, d, SWGFormat(), compress=compress)
 
 # Connected Components on a Sparse Matrix

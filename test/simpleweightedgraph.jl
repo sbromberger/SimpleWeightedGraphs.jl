@@ -1,4 +1,4 @@
-importall SimpleWeightedGraphs
+using SimpleWeightedGraphs
 
 @testset "SimpleWeightedGraphs" begin
     adjmx1 = [0 1 0; 1 0 1; 0 1 0] # SimpleWeightedGraph
@@ -43,7 +43,7 @@ importall SimpleWeightedGraphs
     gx = SimpleWeightedGraph(PathGraph(4))
 
     gc = copy(gx)
-    @test_warn "Note: adding edges with a zero weight to this graph type has no effect." add_edge!(gc, 4, 1, 0.0)
+    @test_logs (:warn, "Note: adding edges to this graph type is not performant.") (:warn, "Note: adding edges with a zero weight to this graph type has no effect.") add_edge!(gc, 4, 1, 0.0)
     @test !(add_edge!(gc, 4, 1, 0.0))
 
     for g in testgraphs(gx)
@@ -105,11 +105,11 @@ importall SimpleWeightedGraphs
     end
 
     gdx = SimpleWeightedDiGraph(PathDiGraph(4))
-		
+
 	gc = copy(gdx)
-	@test_warn "Note: adding edges with a zero weight to this graph type has no effect." add_edge!(gc, 4, 1, 0.0)
+	@test_logs (:warn, "Note: adding edges to this graph type is not performant.") (:warn, "Note: adding edges with a zero weight to this graph type has no effect.") add_edge!(gc, 4, 1, 0.0)
 	@test !(add_edge!(gc, 4, 1, 0.0))
-	
+
     for g in testdigraphs(gdx)
         @test @inferred(vertices(g)) == 1:4
         @test SimpleWeightedEdge(2,3) in edges(g)

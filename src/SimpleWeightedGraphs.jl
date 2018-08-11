@@ -1,12 +1,15 @@
 module SimpleWeightedGraphs
 
 using LightGraphs
+using LinearAlgebra
+using Markdown
+using SparseArrays
 
 import Base:
     convert, eltype, show, ==, Pair, Tuple, copy, length, start, next, done, issubset, zero
 
 import LightGraphs:
-    _NI, _insert_and_dedup!, AbstractGraph, AbstractEdge, AbstractEdgeIter,
+    _NI, AbstractGraph, AbstractEdge, AbstractEdgeIter,
     src, dst, edgetype, nv, ne, vertices, edges, is_directed,
     add_vertex!, add_edge!, rem_vertex!, rem_edge!,
     has_vertex, has_edge, inneighbors, outneighbors,
@@ -83,7 +86,7 @@ end
 has_vertex(g::AbstractSimpleWeightedGraph, v::Integer) = v in vertices(g)
 
 function rem_edge!(g::AbstractSimpleWeightedGraph{T, U}, u::Integer, v::Integer) where T where U
-    warn("Note: removing edges from this graph type is not performant.", once=true)
+    @warn "Note: removing edges from this graph type is not performant." maxlog=1 _id=:_swg_remove_edge
     rem_edge!(g, edgetype(g)(T(u), T(v), one(U)))
 end
 
@@ -100,7 +103,7 @@ internally the removal results in all vertices with indices greater than `v`
 being shifted down one.
 """
 function rem_vertex!(g::AbstractSimpleWeightedGraph, v::Integer)
-    warn("Note: removing vertices from this graph type is not performant.", once=true)
+    @warn "Note: removing vertices from this graph type is not performant." maxlog=1 _id=:_swg_remove_vertex
     v in vertices(g) || return false
     n = nv(g)
 
