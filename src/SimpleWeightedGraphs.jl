@@ -55,9 +55,6 @@ end
 convert(::Type{SparseMatrixCSC{T, U}}, g::AbstractSimpleWeightedGraph) where T<:Real where U<:Integer = SparseMatrixCSC{T, U}(g.weights)
 
 
-
-
-
 ### INTERFACE
 
 nv(g::AbstractSimpleWeightedGraph{T, U}) where T where U = T(size(g.weights, 1))
@@ -114,15 +111,7 @@ function rem_vertex!(g::AbstractSimpleWeightedGraph, v::Integer)
     return true
 end
 
-function outneighbors(g::AbstractSimpleWeightedGraph)
-    mat = g.weights
-    return [mat.rowval[mat.colptr[i]:mat.colptr[i+1]-1] for i in 1:nv(g)]
-end
-
-function outneighbors(g::AbstractSimpleWeightedGraph, v::Integer)
-    mat = g.weights
-    return mat.rowval[mat.colptr[v]:mat.colptr[v+1]-1]
-end
+outneighbors(g::AbstractSimpleWeightedGraph, u::Integer) = g.weights[:, u].nzind
 
 get_weight(g::AbstractSimpleWeightedGraph, u::Integer, v::Integer) = g.weights[v, u]
 

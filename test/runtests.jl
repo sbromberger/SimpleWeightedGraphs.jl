@@ -18,6 +18,8 @@ tests = [
     "connectivity"
 ]
 
+@info "Note: ignore test warnings relating to adding and removing edges and vertices."
+
 @testset "SimpleWeightedGraphs" begin
     for t in tests
         tp = joinpath(testdir, "$(t).jl")

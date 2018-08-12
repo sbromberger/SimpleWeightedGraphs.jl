@@ -58,20 +58,6 @@ function SimpleWeightedGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::Abst
     s = sparse(vcat(i,j), vcat(j,i), vcat(v,v), m, m, combine)
     SimpleWeightedGraph{T, U}(s)
 end
-# Graph{UInt8}(adjmx)
-# function (::Type{SimpleWeightedGraph{T, U}})(adjmx::AbstractMatrix) where T<:Integer where U <: Real
-#     dima,dimb = size(adjmx)
-#     isequal(dima,dimb) || error("Adjacency / distance matrices must be square")
-#     issymmetric(adjmx) || error("Adjacency / distance matrices must be symmetric")
-#     g = SimpleWeightedGraph(U.(LinearAlgebra.fillstored!(copy(adjmx), 1)))
-# end
-
-# converts Graph{Int} to Graph{Int32}
-# function (::Type{SimpleWeightedGraph{T, U}})(g::SimpleWeightedGraph) where T<:Integer where U<:Real
-#     h_fadj = [Vector{T}(x) for x in fadj(g)]
-#     return SimpleGraph(ne(g), h_fadj)
-# end
-
 
 # Graph(adjmx)
 function SimpleWeightedGraph(adjmx::AbstractMatrix)
