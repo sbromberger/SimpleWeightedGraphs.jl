@@ -50,21 +50,6 @@ function SimpleWeightedDiGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::Ab
     SimpleWeightedDiGraph{T, U}(sparse(j, i, v, m, m, combine))
 end
 
-# Graph{UInt8}(adjmx)
-# function (::Type{SimpleWeightedDiGraph{T, U}})(adjmx::AbstractMatrix) where T<:Integer where U <: Real
-#     dima,dimb = size(adjmx)
-#     isequal(dima,dimb) || error("Adjacency / distance matrices must be square")
-#     issymmetric(adjmx) || error("Adjacency / distance matrices must be symmetric")
-#     g = SimpleWeightedDiGraph(U.(LinearAlgebra.fillstored!(copy(adjmx), 1)))
-# end
-
-# converts Graph{Int} to Graph{Int32}
-# function (::Type{SimpleWeightedDiGraph{T, U}})(g::SimpleWeightedDiGraph) where T<:Integer where U<:Real
-#     h_fadj = [Vector{T}(x) for x in fadj(g)]
-#     return SimpleGraph(ne(g), h_fadj)
-# end
-
-
 # Graph(adjmx)
 SimpleWeightedDiGraph(adjmx::AbstractMatrix) = SimpleWeightedDiGraph{Int, eltype(adjmx)}(adjmx')
 
@@ -76,15 +61,8 @@ edgetype(::SimpleWeightedDiGraph{T, U}) where T<:Integer where U<:Real = SimpleW
 
 edges(g::SimpleWeightedDiGraph) = (SimpleWeightedEdge(x[2], x[1], x[3]) for x in zip(findnz(g.weights)...))
 weights(g::SimpleWeightedDiGraph) = g.weights'
-function inneighbors(g::SimpleWeightedDiGraph)
-    mat = SparseMatrixCSC(g.weights')
-    return [mat.rowval[mat.colptr[i]:mat.colptr[i + 1] - 1] for i in 1:nv(g)]
-end
 
-function inneighbors(g::SimpleWeightedDiGraph, v::Integer)
-    mat = SparseMatrixCSC(g.weights')
-    return mat.rowval[mat.colptr[v]:mat.colptr[v + 1] - 1]
-end
+inneighbors(g::SimpleWeightedDiGraph, v::Integer) = g.weights[v,:].nzind
 
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedDiGraph, e::SimpleWeightedGraphEdge)
