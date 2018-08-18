@@ -6,10 +6,35 @@
 A type representing an undirected graph with weights of type `U`.
 """
 mutable struct SimpleWeightedGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
-    weights::SparseMatrixCSC{U, T} # indexed by [dst, src]
+    weights::SparseMatrixCSC{U,T}
+    function SimpleWeightedGraph{T, U}(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real
+        dima,dimb = size(adjmx)
+        isequal(dima,dimb) || error("Adjacency / distance matrices must be square")
+        issymmetric(adjmx) || error("Adjacency / distance matrices must be symmetric")
+        new{T, U}(adjmx)
+    end
+
+    SimpleWeightedGraph{T}(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real =
+        new{T, U}(adjmx)
+
+    SimpleWeightedGraph(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real =
+        new{T, U}(adjmx)
+    
 end
 
 ne(g::SimpleWeightedGraph) = nnz(g.weights) ÷ 2
+
+SimpleWeightedGraph(m::AbstractMatrix{U}) where U <: Real = 
+    SimpleWeightedGraph{Int, U}(SparseMatrixCSC{U, Int}(m))
+SimpleWeightedGraph{T}(m::AbstractMatrix{U}) where T<:Integer where U<:Real =
+    SimpleWeightedGraph{T, U}(SparseMatrixCSC{U, T}(m))
+SimpleWeightedGraph{T, U}(m::AbstractMatrix) where T<:Integer where U<:Real =
+    SimpleWeightedGraph{T, U}(SparseMatrixCSC{U, T}(m))
+
+
+SimpleWeightedGraph(g::SimpleWeightedGraph) = SimpleWeightedGraph(g.weights)
+SimpleWeightedGraph{T,U}(g::SimpleWeightedGraph) where T<:Integer where U<:Real =
+    SimpleWeightedGraph(SparseMatrixCSC{U, T}(g.weights))
 
 
 # Graph{UInt8}(6), Graph{Int16}(7), Graph{UInt8}()
@@ -20,7 +45,7 @@ end
 
 
 # Graph()
-SimpleWeightedGraph() = SimpleWeightedGraph{Int, Float64}()
+SimpleWeightedGraph() = SimpleWeightedGraph(Matrix{Float64}(undef, 0, 0))
 
 # Graph(6), Graph(0x5)
 SimpleWeightedGraph(n::T) where T<:Integer = SimpleWeightedGraph{T, Float64}(n)
@@ -33,11 +58,11 @@ SimpleWeightedGraph(::Type{T}, ::Type{U}) where T<:Integer where U<:Real = Simpl
 
 # Graph(SimpleGraph)
 SimpleWeightedGraph(g::LightGraphs.SimpleGraphs.SimpleGraph{T}, ::Type{U}=Float64) where T <: Integer where U <: Real =
-    SimpleWeightedGraph{T, U}(adjacency_matrix(g))
+    SimpleWeightedGraph{T, U}(adjacency_matrix(g, U))
 
 # Graph(SimpleDiGraph)
 SimpleWeightedGraph(g::LightGraphs.SimpleGraphs.SimpleDiGraph{T}, ::Type{U}=Float64) where T <: Integer where U <: Real =
-    SimpleWeightedGraph{T, U}(adjacency_matrix(LightGraphs.SimpleGraphs.SimpleGraph(g)))
+    SimpleWeightedGraph{T, U}(adjacency_matrix(LightGraphs.SimpleGraphs.SimpleGraph(g), U))
 
 # Graph(SimpleGraph, defaultweight)
 SimpleWeightedGraph(g::LightGraphs.SimpleGraphs.SimpleGraph{T}, x::U) where T <: Integer where U <: Real =
@@ -52,38 +77,12 @@ function (::Type{SimpleWeightedGraph{T, U}})(g::LightGraphs.SimpleGraphs.SimpleG
     SimpleWeightedGraph{T, U}(adjacency_matrix(LightGraphs.SimpleGraphs.SimpleGraph{T}(g), U))
 end
 
-# DiGraph(srcs, dsts, weights)
+# Graph(srcs, dsts, weights)
 function SimpleWeightedGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}; combine = +) where T<:Integer where U<:Real
     m = max(maximum(i), maximum(j))
     s = sparse(vcat(i,j), vcat(j,i), vcat(v,v), m, m, combine)
     SimpleWeightedGraph{T, U}(s)
 end
-# Graph{UInt8}(adjmx)
-# function (::Type{SimpleWeightedGraph{T, U}})(adjmx::AbstractMatrix) where T<:Integer where U <: Real
-#     dima,dimb = size(adjmx)
-#     isequal(dima,dimb) || error("Adjacency / distance matrices must be square")
-#     issymmetric(adjmx) || error("Adjacency / distance matrices must be symmetric")
-#     g = SimpleWeightedGraph(U.(LinearAlgebra.fillstored!(copy(adjmx), 1)))
-# end
-
-# converts Graph{Int} to Graph{Int32}
-# function (::Type{SimpleWeightedGraph{T, U}})(g::SimpleWeightedGraph) where T<:Integer where U<:Real
-#     h_fadj = [Vector{T}(x) for x in fadj(g)]
-#     return SimpleGraph(ne(g), h_fadj)
-# end
-
-
-# Graph(adjmx)
-function SimpleWeightedGraph(adjmx::AbstractMatrix)
-    dima,dimb = size(adjmx)
-    isequal(dima,dimb) || error("Adjacency / distance matrices must be square")
-    issymmetric(adjmx) || error("Adjacency / distance matrices must be symmetric")
-    SimpleWeightedGraph{Int, eltype(adjmx)}(adjmx')
-end
-
-# Graph(digraph). Weights will be added.
-
-SimpleWeightedGraph(g::SimpleWeightedDiGraph) = SimpleWeightedGraph(g.weights .+ g.weights')
 
 edgetype(::SimpleWeightedGraph{T, U}) where T<:Integer where U<:Real= SimpleWeightedGraphEdge{T,U}
 

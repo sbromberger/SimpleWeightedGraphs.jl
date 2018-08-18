@@ -50,7 +50,6 @@ using SimpleWeightedGraphs
         @test @inferred(vertices(g)) == 1:4
         @test SimpleWeightedEdge(2,3) in edges(g)
         @test @inferred(nv(g)) == 4
-        @test @inferred(outneighbors(g)) == inneighbors(g)
         @test @inferred(outneighbors(g,2)) == inneighbors(g,2) == neighbors(g,2)
         @test @inferred(has_edge(g, 2, 3))
         @test @inferred(has_edge(g, 3, 2))
@@ -115,8 +114,8 @@ using SimpleWeightedGraphs
         @test SimpleWeightedEdge(2,3) in edges(g)
         @test !(SimpleWeightedEdge(3,2) in edges(g))
         @test @inferred(nv(g)) == 4
-        @test @inferred(outneighbors(g)[2]) == outneighbors(g, 2) == [3]
-        @test @inferred(inneighbors(g)[2]) == inneighbors(g, 2) == [1]
+        @test outneighbors(g, 2) == [3]
+        @test inneighbors(g, 2) == [1]
 
         @test @inferred(has_edge(g, 2, 3))
         @test @inferred(!has_edge(g, 3, 2))

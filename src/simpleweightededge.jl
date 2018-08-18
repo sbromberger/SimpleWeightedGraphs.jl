@@ -34,3 +34,5 @@ Tuple(e::AbstractSimpleWeightedEdge) = (src(e), dst(e), weight(e))
 # Convenience functions - note that these do not use weight.
 reverse(e::T) where T<:AbstractSimpleWeightedEdge = T(dst(e), src(e), weight(e))
 ==(e1::AbstractSimpleWeightedEdge, e2::AbstractSimpleWeightedEdge) = (src(e1) == src(e2) && dst(e1) == dst(e2))
+==(e1::AbstractSimpleWeightedEdge, e2::AbstractEdge) = (src(e1) == src(e2) && dst(e1) == dst(e2))
+==(e1::AbstractEdge, e2::AbstractSimpleWeightedEdge) = (src(e1) == src(e2) && dst(e1) == dst(e2))
