@@ -14,15 +14,15 @@ mutable struct SimpleWeightedGraph{T<:Integer, U<:Real} <: AbstractSimpleWeighte
         new{T, U}(adjmx)
     end
 
-    SimpleWeightedGraph{T}(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real =
-        new{T, U}(adjmx)
-
-    SimpleWeightedGraph(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real =
-        new{T, U}(adjmx)
-    
 end
 
 ne(g::SimpleWeightedGraph) = nnz(g.weights) ÷ 2
+
+SimpleWeightedGraph{T}(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real =
+    SimpleWeightedGraph{T, U}(adjmx)
+
+SimpleWeightedGraph(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real =
+    SimpleWeightedGraph{T, U}(adjmx)
 
 SimpleWeightedGraph(m::AbstractMatrix{U}) where U <: Real = 
     SimpleWeightedGraph{Int, U}(SparseMatrixCSC{U, Int}(m))

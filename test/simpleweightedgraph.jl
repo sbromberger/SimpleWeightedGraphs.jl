@@ -1,6 +1,7 @@
 using SimpleWeightedGraphs
 
 @testset "SimpleWeightedGraphs" begin
+    @info("Ignore warnings relating to adding and removing vertices and edges")
     adjmx1 = [0 1 0; 1 0 1; 0 1 0] # SimpleWeightedGraph
     adjmx2 = [0 1 0; 1 0 1; 1 1 0] # SimpleWeightedDiGraph
     # specific concrete generators - no need for loop
