@@ -114,11 +114,6 @@ function rem_vertex!(g::AbstractSimpleWeightedGraph, v::Integer)
     return true
 end
 
-function outneighbors(g::AbstractSimpleWeightedGraph)
-    mat = g.weights
-    return [mat.rowval[mat.colptr[i]:mat.colptr[i+1]-1] for i in 1:nv(g)]
-end
-
 function outneighbors(g::AbstractSimpleWeightedGraph, v::Integer)
     mat = g.weights
     return mat.rowval[mat.colptr[v]:mat.colptr[v+1]-1]
@@ -143,5 +138,13 @@ include("persistence.jl")
 
 const WGraph = SimpleWeightedGraph
 const WDiGraph = SimpleWeightedDiGraph
+
+SimpleWeightedDiGraph(g::SimpleWeightedGraph) = SimpleWeightedDiGraph(g.weights)
+SimpleWeightedDiGraph{T,U}(g::SimpleWeightedGraph) where T<:Integer where U<:Real =
+    SimpleWeightedDiGraph(SparseMatrixCSC{U, T}(g.weights))
+
+SimpleWeightedGraph(g::SimpleWeightedDiGraph) = SimpleWeightedGraph(g.weights .+ g.weights')
+SimpleWeightedGraph{T,U}(g::SimpleWeightedDiGraph) where T<:Integer where U<:Real =
+    SimpleWeightedGraph(SparseMatrixCSC{U, T}(g.weights .+ g.weights'))
 
 end # module
