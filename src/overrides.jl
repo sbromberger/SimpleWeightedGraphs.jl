@@ -94,3 +94,13 @@ function connected_components(g::SimpleWeightedGraph{T,U}) where T where U
     end
     cc
 end
+
+function induced_subgraph(g::T, vlist::AbstractVector{U}) where T <: AbstractSimpleWeightedGraph where U <: Integer
+    E = eltype(g)
+    allunique(vlist) || throw(ArgumentError("Vertices in subgraph list must be unique"))
+    new_weights = g.weights[E.(vlist), E.(vlist)]
+    newg = zero(g)
+    newg.weights = new_weights
+    return newg, Vector{E}(vlist)
+end
+
