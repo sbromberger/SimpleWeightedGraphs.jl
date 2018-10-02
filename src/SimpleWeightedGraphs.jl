@@ -86,7 +86,6 @@ end
 has_vertex(g::AbstractSimpleWeightedGraph, v::Integer) = v in vertices(g)
 
 function rem_edge!(g::AbstractSimpleWeightedGraph{T, U}, u::Integer, v::Integer) where T where U
-    @warn "Note: removing edges from this graph type is not performant." maxlog=1 _id=:_swg_remove_edge
     rem_edge!(g, edgetype(g)(T(u), T(v), one(U)))
 end
 
@@ -103,7 +102,6 @@ internally the removal results in all vertices with indices greater than `v`
 being shifted down one.
 """
 function rem_vertex!(g::AbstractSimpleWeightedGraph, v::Integer)
-    @warn "Note: removing vertices from this graph type is not performant." maxlog=1 _id=:_swg_remove_vertex
     v in vertices(g) || return false
     n = nv(g)
 

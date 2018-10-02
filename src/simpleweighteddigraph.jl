@@ -2,6 +2,9 @@
     SimpleWeightedDiGraph{T, U}
 
 A type representing a directed graph with weights of type `U`.
+
+Note that adding or removing vertices or edges is not particularly performant;
+see MetaGraphs.jl for possible alternatives.
 """
 mutable struct SimpleWeightedDiGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
     weights::SparseMatrixCSC{U, T} # indexed by [dst, src]
@@ -19,7 +22,7 @@ SimpleWeightedDiGraph{T}(adjmx::SparseMatrixCSC{U, T}; permute=true) where T<:In
 SimpleWeightedDiGraph(adjmx::SparseMatrixCSC{U, T}; permute=true) where T<:Integer where U<:Real =
     SimpleWeightedDiGraph{T, U}(adjmx; permute=permute)
 
-SimpleWeightedDiGraph(m::AbstractMatrix{U}) where U <: Real = 
+SimpleWeightedDiGraph(m::AbstractMatrix{U}) where U <: Real =
     SimpleWeightedDiGraph{Int, U}(SparseMatrixCSC{U, Int}(m))
 SimpleWeightedDiGraph{T}(m::AbstractMatrix{U}) where T<:Integer where U<:Real =
     SimpleWeightedDiGraph{T, U}(SparseMatrixCSC{U, T}(m))
@@ -77,7 +80,6 @@ inneighbors(g::SimpleWeightedDiGraph, v::Integer) = g.weights[v,:].nzind
 
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedDiGraph, e::SimpleWeightedGraphEdge)
-    @warn "Note: adding edges to this graph type is not performant." maxlog=1 _id=:swd_add_edge
     T = eltype(g)
     U = weighttype(g)
     s_, d_, w = Tuple(e)

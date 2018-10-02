@@ -4,6 +4,9 @@
     SimpleWeightedGraph{T, U}
 
 A type representing an undirected graph with weights of type `U`.
+
+Note that adding or removing vertices or edges is not particularly performant;
+see MetaGraphs.jl for possible alternatives.
 """
 mutable struct SimpleWeightedGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
     weights::SparseMatrixCSC{U,T}
@@ -24,7 +27,7 @@ SimpleWeightedGraph{T}(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:R
 SimpleWeightedGraph(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real =
     SimpleWeightedGraph{T, U}(adjmx)
 
-SimpleWeightedGraph(m::AbstractMatrix{U}) where U <: Real = 
+SimpleWeightedGraph(m::AbstractMatrix{U}) where U <: Real =
     SimpleWeightedGraph{Int, U}(SparseMatrixCSC{U, Int}(m))
 SimpleWeightedGraph{T}(m::AbstractMatrix{U}) where T<:Integer where U<:Real =
     SimpleWeightedGraph{T, U}(SparseMatrixCSC{U, T}(m))
@@ -92,7 +95,6 @@ inneighbors(g::SimpleWeightedGraph, x...) = outneighbors(g, x...)
 
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedGraph, e::SimpleWeightedGraphEdge)
-    @warn "Note: adding edges to this graph type is not performant." maxlog=1 _id=:swg_add_edge
     T = eltype(g)
     U = weighttype(g)
     s_, d_, w = Tuple(e)
