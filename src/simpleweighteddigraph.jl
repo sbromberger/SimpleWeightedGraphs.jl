@@ -90,14 +90,14 @@ function add_edge!(g::SimpleWeightedDiGraph, e::SimpleWeightedGraphEdge)
     s = T(s_)
     d = T(d_)
     (s in vertices(g) && d in vertices(g)) || return false
-    g.weights[d, s] = w
+    @inbounds g.weights[d, s] = w
     return true
 end
 
 function rem_edge!(g::SimpleWeightedDiGraph, e::SimpleWeightedGraphEdge)
     has_edge(g, e) || return false
     U = weighttype(g)
-    g.weights[dst(e), src(e)] = zero(U)
+    @inbounds g.weights[dst(e), src(e)] = zero(U)
     return true
 end
 
