@@ -44,7 +44,7 @@ using SimpleWeightedGraphs
     gx = SimpleWeightedGraph(PathGraph(4))
 
     gc = copy(gx)
-    @test_logs (:warn, "Note: adding edges to this graph type is not performant.") (:warn, "Note: adding edges with a zero weight to this graph type has no effect.") add_edge!(gc, 4, 1, 0.0)
+    @test_logs (:warn, "Note: adding edges with a zero weight to this graph type has no effect.") add_edge!(gc, 4, 1, 0.0)
     @test !(add_edge!(gc, 4, 1, 0.0))
 
     for g in testgraphs(gx)
@@ -106,9 +106,9 @@ using SimpleWeightedGraphs
 
     gdx = SimpleWeightedDiGraph(PathDiGraph(4))
 
-	gc = copy(gdx)
-	@test_logs (:warn, "Note: adding edges to this graph type is not performant.") (:warn, "Note: adding edges with a zero weight to this graph type has no effect.") add_edge!(gc, 4, 1, 0.0)
-	@test !(add_edge!(gc, 4, 1, 0.0))
+    gc = copy(gdx)
+    @test_logs (:warn, "Note: adding edges with a zero weight to this graph type has no effect.") add_edge!(gc, 4, 1, 0.0)
+    @test !(add_edge!(gc, 4, 1, 0.0))
 
     for g in testdigraphs(gdx)
         @test @inferred(vertices(g)) == 1:4
