@@ -13,6 +13,12 @@
         gi = gx[2:4]
         @test weights(gi)[1, 2] == 99
         
+        h = @inferred(cartesian_product(g, g))
+        @test nv(h) == 25
+        @test ne(h) == 40
+        gz = g3[1:4]
+        add_edge!(gz, 3, 4, 87)
+        @test weights(cartesian_product(g3,gz))[11,12]==weights(gz)[3,4]  
     end
 
     add_edge!(g5, 1, 2, 2); add_edge!(g5, 2, 3, 2); add_edge!(g5, 1, 3, 1); add_edge!(g5, 3, 4, 5)

@@ -59,6 +59,26 @@ savegraph(fn::AbstractString, g::AbstractSimpleWeightedGraph, gname::AbstractStr
 savegraph(fn::AbstractString, d::Dict{T, U}; compress=true) where T <: AbstractString where U <: AbstractSimpleWeightedGraph =
     savegraph(fn, d, SWGFormat(), compress=compress)
 
+# It is possible that this is suboptimal, but it is the most trivial extension of the implementation used in LightGraphs
+function cartesian_product(g::G, h::G) where G <: AbstractSimpleWeightedGraph
+    z = G(nv(g) * nv(h))
+    id(i, j) = (i - 1) * nv(h) + j
+    for e in edges(g)
+        i1, i2 = Tuple(e)
+        for j = 1:nv(h)
+            add_edge!(z, id(i1, j), id(i2, j), weight(e))
+        end
+    end
+
+    for e in edges(h)
+        j1, j2 = Tuple(e)
+        for i in vertices(g)
+            add_edge!(z, id(i, j1), id(i, j2), weight(e))
+        end
+    end
+    return z
+end
+
 # Connected Components on a Sparse Matrix
 
 function _cc(g::SimpleWeightedGraph{T,U}) where T where U
