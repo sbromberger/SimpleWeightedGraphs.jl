@@ -124,3 +124,238 @@ function induced_subgraph(g::T, vlist::AbstractVector{U}) where T <: AbstractSim
     return newg, Vector{E}(vlist)
 end
 
+
+function outedgeweights(g::AbstractSimpleWeightedGraph, u)
+    weights = g.weights
+    return @view nonzeros(weights)[nzrange(weights, u)]
+end
+
+struct UseEdgeWeightIterators end
+
+import LightGraphs: prim_mst, kruskal_mst, a_star, dijkstra_shortest_paths, eccentricity, diameter, periphery, radius, center
+
+using DataStructures
+
+function prim_mst(g::SimpleWeightedGraph{T, EW}, distmx::UseEdgeWeightIterators=UseEdgeWeightIterators()) where {T, EW}
+    nvg = nv(g)
+
+    pq = PriorityQueue{T, EW}()
+    finished = zeros(Bool, nvg)
+    wt = fill(typemax(EW), nvg) #Faster access time
+    parents = zeros(T, nv(g))
+
+    pq[1] = typemin(EW)
+    wt[1] = typemin(EW)
+
+    while !isempty(pq)
+        v = dequeue!(pq)
+        finished[v] = true
+
+        for (u, dist_vu) in zip(neighbors(g, v), outedgeweights(g, v))
+            finished[u] && continue
+
+            if wt[u] > dist_vu
+                wt[u] = dist_vu
+                pq[u] = wt[u]
+                parents[u] = v
+            end
+        end
+    end
+
+    return [Edge{T}(parents[v], v) for v in vertices(g) if parents[v] != 0]
+end
+
+function kruskal_mst(g::SimpleWeightedGraph{T, EW},
+     distmx::UseEdgeWeightIterators=UseEdgeWeightIterators(); minimize=true) where {EW <: Real, T}
+
+    connected_vs = IntDisjointSets(nv(g))
+
+    mst = Vector{edgetype(g)}()
+    sizehint!(mst, nv(g) - 1)
+
+    weights = Vector{EW}()
+    sizehint!(weights, ne(g))
+    edge_list = collect(edges(g))
+    for e in edge_list
+        push!(weights, weight(e))
+    end
+
+    for e in edge_list[sortperm(weights; rev=!minimize)]
+        if !in_same_set(connected_vs, src(e), dst(e))
+            union!(connected_vs, src(e), dst(e))
+            push!(mst, e)
+            (length(mst) >= nv(g) - 1) && break
+        end
+    end
+
+    return mst
+end
+
+
+function a_star_impl!(g::AbstractSimpleWeightedGraph,# the graph
+    t, # the end vertex
+    frontier,               # an initialized heap containing the active vertices
+    colormap::Vector{UInt8},  # an (initialized) color-map to indicate status of vertices
+    distmx::UseEdgeWeightIterators,
+    heuristic::Function)
+
+    @inbounds while !isempty(frontier)
+        (cost_so_far, path, u) = dequeue!(frontier)
+        if u == t
+            return path
+        end
+
+        for (v, dist_uv) in zip(outneighbors(g, u), outedgeweights(g, u))
+            if get(colormap, v, 0) < 2
+                colormap[v] = 1
+                new_path = cat(path, Edge(u, v), dims=1)
+                path_cost = cost_so_far + dist_uv
+                enqueue!(frontier,
+                    (path_cost, new_path, v),
+                    path_cost + heuristic(v)
+                )
+            end
+        end
+        colormap[u] = 2
+    end
+    Vector{Edge}()
+end
+
+
+function a_star(g::AbstractSimpleWeightedGraph{U, T},  # the g
+    s::Integer,                       # the start vertex
+    t::Integer,                       # the end vertex
+    distmx::UseEdgeWeightIterators=UseEdgeWeightIterators(),
+    heuristic::Function=n -> zero(T)) where {T, U}
+
+    # heuristic (under)estimating distance to target
+    frontier = PriorityQueue{Tuple{T,Vector{Edge},U},T}()
+    frontier[(zero(T), Vector{Edge}(), U(s))] = zero(T)
+    colormap = LightGraphs.empty_colormap(nv(g))
+    colormap[s] = 1
+    a_star_impl!(g, U(t), frontier, colormap, distmx, heuristic)
+end
+
+
+
+function dijkstra_shortest_paths(g::AbstractSimpleWeightedGraph{V, T},
+    srcs::Vector{U},
+    distmx::UseEdgeWeightIterators=UseEdgeWeightIterators();
+    allpaths=false,
+    trackvertices=false
+    ) where T <: Real where U <: Integer where V
+
+    nvg = nv(g)
+    dists = fill(typemax(T), nvg)
+    parents = zeros(U, nvg)
+    visited = zeros(Bool, nvg)
+
+    pathcounts = zeros(UInt64, nvg)
+    preds = fill(Vector{U}(), nvg)
+    H = PriorityQueue{U,T}()
+    # fill creates only one array.
+
+    for src in srcs
+        dists[src] = zero(T)
+        visited[src] = true
+        pathcounts[src] = 1
+        H[src] = zero(T)
+    end
+
+    closest_vertices = Vector{U}()  # Maintains vertices in order of distances from source
+    sizehint!(closest_vertices, nvg)
+
+    while !isempty(H)
+        u = dequeue!(H)
+
+        if trackvertices
+            push!(closest_vertices, u)
+        end
+
+        d = dists[u] # Cannot be typemax if `u` is in the queue
+        for (v, dist_uv) in zip(outneighbors(g, u), outedgeweights(g, u))
+            alt = d + dist_uv
+
+            if !visited[v]
+                visited[v] = true
+                dists[v] = alt
+                parents[v] = u
+
+                pathcounts[v] += pathcounts[u]
+                if allpaths
+                    preds[v] = [u;]
+                end
+                H[v] = alt
+            elseif alt < dists[v]
+                dists[v] = alt
+                parents[v] = u
+                #615
+                pathcounts[v] = pathcounts[u]
+                if allpaths
+                    resize!(preds[v], 1)
+                    preds[v][1] = u
+                end
+                H[v] = alt
+            elseif alt == dists[v]
+                pathcounts[v] += pathcounts[u]
+                if allpaths
+                    push!(preds[v], u)
+                end
+            end
+        end
+    end
+
+    if trackvertices
+        for s in vertices(g)
+            if !visited[s]
+                push!(closest_vertices, s)
+            end
+        end
+    end
+
+    for src in srcs
+        pathcounts[src] = 1
+        parents[src] = 0
+        empty!(preds[src])
+    end
+
+    return LightGraphs.DijkstraState{T,U}(parents, dists, preds, pathcounts, closest_vertices)
+end
+
+dijkstra_shortest_paths(g::AbstractSimpleWeightedGraph, src::Integer, distmx::UseEdgeWeightIterators=UseEdgeWeightIterators(); allpaths=false, trackvertices=false) =
+dijkstra_shortest_paths(g, [src;], distmx; allpaths=allpaths, trackvertices=trackvertices)
+
+
+function eccentricity(g::AbstractSimpleWeightedGraph{T, EW},
+        v::Integer,
+        distmx::UseEdgeWeightIterators=UseEdgeWeightIterators()) where {T, EW <: Real}
+    e = maximum(dijkstra_shortest_paths(g, v, distmx).dists)
+    e == typemax(EW) && @warn("Infinite path length detected for vertex $v")
+
+    return e
+end
+
+eccentricity(g::AbstractSimpleWeightedGraph,
+    vs::AbstractVector=vertices(g),
+    distmx::UseEdgeWeightIterators=UseEdgeWeightIterators()) = [eccentricity(g, v, distmx) for v in vs]
+
+
+eccentricity(g::AbstractSimpleWeightedGraph, distmx::UseEdgeWeightIterators=UseEdgeWeightIterators()) =
+    eccentricity(g, vertices(g), distmx)
+
+
+diameter(g::AbstractSimpleWeightedGraph, distmx::UseEdgeWeightIterators=UseEdgeWeightIterators()) =
+maximum(eccentricity(g, distmx))
+
+
+
+periphery(g::AbstractSimpleWeightedGraph, distmx::UseEdgeWeightIterators=UseEdgeWeightIterators()) =
+    periphery(eccentricity(g, distmx))
+
+
+radius(g::AbstractSimpleWeightedGraph, distmx::UseEdgeWeightIterators=UseEdgeWeightIterators()) =
+    minimum(eccentricity(g, distmx))
+
+
+center(g::AbstractSimpleWeightedGraph, distmx::UseEdgeWeightIterators=UseEdgeWeightIterators()) =
+    center(eccentricity(g, distmx))
