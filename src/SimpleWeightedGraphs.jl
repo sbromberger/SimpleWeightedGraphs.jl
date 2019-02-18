@@ -33,7 +33,8 @@ export
     get_weight,
     WGraph,
     WDiGraph,
-    SWGFormat
+    SWGFormat,
+    outneighbor_weights
 
 include("simpleweightededge.jl")
 
@@ -114,8 +115,21 @@ end
 
 function outneighbors(g::AbstractSimpleWeightedGraph, v::Integer)
     mat = g.weights
-    return mat.rowval[mat.colptr[v]:mat.colptr[v+1]-1]
+    return view(mat.rowval, mat.colptr[v]:mat.colptr[v+1]-1)
 end
+
+@doc_str """
+    neighbor_weights(g::SimpleWeightedGraph, v)
+
+    Returns the weights of (out-)neighbors(g, v). The pairs of outneighbors and their 
+    weights can be obtained by `zip(neighbors(g,v), neighbor_weights(g,v))`
+"""
+function neighbor_weights(g::SimpleWeightedGraph, v::Integer)
+        mat = g.weights
+        return view(mat.nzval, mat.colptr[v]:mat.colptr[v+1]-1)
+end
+
+
 
 get_weight(g::AbstractSimpleWeightedGraph, u::Integer, v::Integer) = g.weights[v, u]
 

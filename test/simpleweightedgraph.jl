@@ -47,6 +47,15 @@ using SimpleWeightedGraphs
     @test_logs (:warn, "Note: adding edges with a zero weight to this graph type has no effect.") add_edge!(gc, 4, 1, 0.0)
     @test !(add_edge!(gc, 4, 1, 0.0))
 
+    function test_neighborweights(g::SimpleWeightedGraph)
+        for u in vertices(g)
+            for (v,d) in zip(neighbors(g,u), neighbor_weights(g, u))
+                d == get_weight(g, u, v) || return false
+            end
+        end
+        true
+    end
+
     for g in testgraphs(gx)
         @test @inferred(vertices(g)) == 1:4
         @test SimpleWeightedEdge(2,3) in edges(g)
@@ -54,6 +63,7 @@ using SimpleWeightedGraphs
         @test @inferred(outneighbors(g,2)) == inneighbors(g,2) == neighbors(g,2)
         @test @inferred(has_edge(g, 2, 3))
         @test @inferred(has_edge(g, 3, 2))
+        @test test_neighborweights(g)
 
         gc = copy(g)
         @test @inferred(add_edge!(gc, 4=>1)) && gc == SimpleWeightedGraph(CycleGraph(4))
