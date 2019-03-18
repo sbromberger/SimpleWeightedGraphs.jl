@@ -116,7 +116,7 @@ end
 
 function outneighbors(g::AbstractSimpleWeightedGraph, v::Integer)
     mat = g.weights
-    return mat.rowval[mat.colptr[v]:mat.colptr[v+1]-1]
+    return view(mat.rowval, mat.colptr[v]:mat.colptr[v+1]-1)
 end
 
 get_weight(g::AbstractSimpleWeightedGraph, u::Integer, v::Integer) = g.weights[v, u]
