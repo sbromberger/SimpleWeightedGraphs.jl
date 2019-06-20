@@ -10,13 +10,16 @@ function add_vertices!(g::AbstractSimpleWeightedGraph, n::Integer)
     return true
 end
 
-function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=Int; dir::Symbol=:out)
+function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=Nothing; dir::Symbol=:out)
+    (T == Nothing) && (T = weighttype(g))
     if dir == :out
-        return SparseMatrixCSC(T.(LinearAlgebra.fillstored!(copy(g.weights), 1))')
+        return SparseMatrixCSC(T.(copy(g.weights))')
     else
-        return T.(LinearAlgebra.fillstored!(copy(g.weights), 1))
+        return T.(copy(g.weights))
     end
 end
+
+laplacian_matrix(g::AbstractSimpleWeightedGraph) = diag(sum(diag(weights(g))) - adjacency_matrix(g)
 
 function pagerank(g::SimpleWeightedDiGraph, α=0.85, n=100::Integer, ϵ=1.0e-6)
     A = weights(g)
@@ -123,4 +126,3 @@ function induced_subgraph(g::T, vlist::AbstractVector{U}) where T <: AbstractSim
     newg.weights = new_weights
     return newg, Vector{E}(vlist)
 end
-
