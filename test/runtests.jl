@@ -1,5 +1,6 @@
 using LightGraphs
 using SimpleWeightedGraphs
+using LinearAlgebra
 using Test
 
 testdir = dirname(@__FILE__)
