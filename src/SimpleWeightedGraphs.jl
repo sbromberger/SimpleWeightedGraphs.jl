@@ -34,7 +34,8 @@ export
     get_weight,
     WGraph,
     WDiGraph,
-    SWGFormat
+    SWGFormat,
+    degree_matrix
 
 include("simpleweightededge.jl")
 

@@ -10,8 +10,24 @@ function add_vertices!(g::AbstractSimpleWeightedGraph, n::Integer)
     return true
 end
 
-function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=Nothing; dir::Symbol=:out)
-    (T == Nothing) && (T = weighttype(g))
+function degree_matrix(g::AbstractSimpleWeightedGraph, T::DataType=weighttype(g); dir::Symbol=:out)
+    if is_directed(g)
+        if dir == :out
+            d = vec(sum(g.weights, dims=1))
+        elseif dir == :in
+            d = vec(sum(g.weights, dims=2))
+        elseif dir == :both
+            d = vec(sum(g.weights, dims=1)) + vec(sum(g.weights, dims=2))
+        else
+            error("Not implemented")
+        end
+    else
+        d = vec(sum(g.weights, dims=1))
+    end
+    return SparseMatrixCSC(T.(diagm(0=>d)))
+end
+
+function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=weighttype(g); dir::Symbol=:out)
     if dir == :out
         return SparseMatrixCSC(T.(copy(g.weights))')
     else
@@ -19,7 +35,9 @@ function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=Nothing; d
     end
 end
 
-laplacian_matrix(g::AbstractSimpleWeightedGraph) = diag(sum(diag(weights(g))) - adjacency_matrix(g)
+function laplacian_matrix(g::AbstractSimpleWeightedGraph, T::DataType=weighttype(g); dir::Symbol=:out)
+    degree_matrix(g, T; dir=dir) - adjacency_matrix(g, T; dir=dir)
+end
 
 function pagerank(g::SimpleWeightedDiGraph, α=0.85, n=100::Integer, ϵ=1.0e-6)
     A = weights(g)
