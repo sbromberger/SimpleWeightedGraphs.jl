@@ -26,9 +26,9 @@ git:
 #  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
 
 # uncomment the following lines to override the default test script
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'using Pkg; Pkg.add(PackageSpec(url=pwd())); Pkg.build("SimpleWeightedGraphs"); Pkg.test("SimpleWeightedGraphs"; coverage=true)'
+# script:
+#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+#  - julia -e 'using Pkg; Pkg.add(PackageSpec(url=pwd())); Pkg.build("SimpleWeightedGraphs"); Pkg.test("SimpleWeightedGraphs"; coverage=true)'
 after_success:
   # push coverage results to Codecov
   - julia -e 'using Pkg; cd(Pkg.dir("SimpleWeightedGraphs")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
