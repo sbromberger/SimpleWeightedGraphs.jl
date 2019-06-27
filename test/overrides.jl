@@ -56,6 +56,7 @@
         @test degree_matrix(g, Float64, dir=:out) == g5_dout
         @test degree_matrix(g, Float64, dir=:in) == g5_din
         @test degree_matrix(g, Float64, dir=:both) == g5_dboth
+        @test_throws DomainError degree_matrix(g, dir=:other)
         @test @inferred(adjacency_matrix(g, Int64)) == adjacency_matrix(g, Int64; dir=:out)
         @test adjacency_matrix(g; dir=:out) == adjacency_matrix(g; dir=:in)'
         @test !issymmetric(laplacian_matrix(g))

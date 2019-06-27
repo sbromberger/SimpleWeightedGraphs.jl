@@ -19,7 +19,7 @@ function degree_matrix(g::AbstractSimpleWeightedGraph, T::DataType=weighttype(g)
         elseif dir == :both
             d = vec(sum(g.weights, dims=1)) + vec(sum(g.weights, dims=2))
         else
-            error("Not implemented")
+            throw(DomainError(dir, "invalid argument, only accept :in, :out and :both"))
         end
     else
         d = vec(sum(g.weights, dims=1))
