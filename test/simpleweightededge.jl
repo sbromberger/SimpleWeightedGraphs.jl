@@ -20,12 +20,14 @@ import SimpleWeightedGraphs.SimpleWeightedEdge
 
         @test src(ep1) == src(ep2) == src(ep3) == src(ep) == s
         @test dst(ep1) == dst(ep2) == dst(ep3) == dst(ep) == s + one(T)
+        @test weight(ep1) == one(T)
 
         @test eltype(t) == typeof(s)
         @test SimpleWeightedEdge(t) == e3
         @test SimpleWeightedEdge(t1) == SimpleWeightedEdge(t2)
         @test SimpleWeightedEdge(t1) == SimpleWeightedEdge{UInt8, Float64}(t1) == SimpleWeightedEdge{Int16, Float64}(t1)
         @test SimpleWeightedEdge{Int64, Float64}(ep1) == e3
+        @test Tuple(ep1) == t2
 
         @test reverse(ep1) == re
         @test sprint(show, ep1) == "Edge 1 => 2 with weight 1"

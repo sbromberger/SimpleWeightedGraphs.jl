@@ -10,12 +10,33 @@ function add_vertices!(g::AbstractSimpleWeightedGraph, n::Integer)
     return true
 end
 
-function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=Int; dir::Symbol=:out)
-    if dir == :out
-        return SparseMatrixCSC(T.(LinearAlgebra.fillstored!(copy(g.weights), 1))')
+function degree_matrix(g::AbstractSimpleWeightedGraph, T::DataType=weighttype(g); dir::Symbol=:out)
+    if is_directed(g)
+        if dir == :out
+            d = vec(sum(g.weights, dims=1))
+        elseif dir == :in
+            d = vec(sum(g.weights, dims=2))
+        elseif dir == :both
+            d = vec(sum(g.weights, dims=1)) + vec(sum(g.weights, dims=2))
+        else
+            throw(DomainError(dir, "invalid argument, only accept :in, :out and :both"))
+        end
     else
-        return T.(LinearAlgebra.fillstored!(copy(g.weights), 1))
+        d = vec(sum(g.weights, dims=1))
     end
+    return SparseMatrixCSC(T.(diagm(0=>d)))
+end
+
+function adjacency_matrix(g::AbstractSimpleWeightedGraph, T::DataType=weighttype(g); dir::Symbol=:out)
+    if dir == :out
+        return SparseMatrixCSC(T.(copy(g.weights))')
+    else
+        return T.(copy(g.weights))
+    end
+end
+
+function laplacian_matrix(g::AbstractSimpleWeightedGraph, T::DataType=weighttype(g); dir::Symbol=:out)
+    degree_matrix(g, T; dir=dir) - adjacency_matrix(g, T; dir=dir)
 end
 
 function pagerank(g::SimpleWeightedDiGraph, α=0.85, n=100::Integer, ϵ=1.0e-6)
@@ -123,4 +144,3 @@ function induced_subgraph(g::T, vlist::AbstractVector{U}) where T <: AbstractSim
     newg.weights = new_weights
     return newg, Vector{E}(vlist)
 end
-
