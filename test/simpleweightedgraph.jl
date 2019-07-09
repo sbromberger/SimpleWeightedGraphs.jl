@@ -219,4 +219,7 @@ using SimpleWeightedGraphs
     @test s.weights[1,2] == 1
     @test s.weights[2,1] == 2
 
+    @test SimpleDiGraph(SimpleWeightedDiGraph(CycleGraph(4))) == SimpleDiGraph(CycleGraph(4))
+    @test SimpleGraph(SimpleWeightedGraph(PathGraph(5))) == PathGraph(5)
+
 end
