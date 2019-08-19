@@ -119,6 +119,9 @@ function outneighbors(g::AbstractSimpleWeightedGraph, v::Integer)
     return mat.rowval[mat.colptr[v]:mat.colptr[v+1]-1]
 end
 
+outdegree(g::AbstractSimpleWeightedGraph, v::Integer) = sum(g.weights[outneighbors(g, v),v])
+
+
 get_weight(g::AbstractSimpleWeightedGraph, u::Integer, v::Integer) = g.weights[v, u]
 
 zero(g::T) where T<:AbstractSimpleWeightedGraph = T()

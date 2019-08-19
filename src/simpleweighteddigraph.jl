@@ -78,6 +78,8 @@ weights(g::SimpleWeightedDiGraph) = g.weights'
 
 inneighbors(g::SimpleWeightedDiGraph, v::Integer) = g.weights[v,:].nzind
 
+indegree(g::SimpleWeightedDiGraph, v::Integer) = sum(g.weights[v,inneighbors(g, v)])
+
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedDiGraph, e::SimpleWeightedGraphEdge)
     T = eltype(g)

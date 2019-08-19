@@ -93,6 +93,8 @@ edges(g::SimpleWeightedGraph) = (SimpleWeightedEdge(x[1], x[2], x[3]) for x in z
 weights(g::SimpleWeightedGraph) = g.weights
 inneighbors(g::SimpleWeightedGraph, x...) = outneighbors(g, x...)
 
+indegree(g::SimpleWeightedGraph, v::Integer) = outdegree(g, v)
+
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedGraph, e::SimpleWeightedGraphEdge)
     T = eltype(g)
