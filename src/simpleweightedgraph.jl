@@ -87,6 +87,8 @@ function SimpleWeightedGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::Abst
     SimpleWeightedGraph{T, U}(s)
 end
 
+LightGraphs.SimpleGraph(g::SimpleWeightedGraph) = SimpleGraph(g.weights)
+
 edgetype(::SimpleWeightedGraph{T, U}) where T<:Integer where U<:Real= SimpleWeightedGraphEdge{T,U}
 
 edges(g::SimpleWeightedGraph) = (SimpleWeightedEdge(x[1], x[2], x[3]) for x in zip(findnz(triu(g.weights))...))

@@ -71,6 +71,8 @@ function SimpleWeightedDiGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::Ab
     SimpleWeightedDiGraph{T, U}(sparse(j, i, v, m, m, combine); permute=false)
 end
 
+LightGraphs.SimpleDiGraph(g::SimpleWeightedDiGraph) = SimpleDiGraph(g.weights)
+
 edgetype(::SimpleWeightedDiGraph{T, U}) where T<:Integer where U<:Real = SimpleWeightedGraphEdge{T,U}
 
 edges(g::SimpleWeightedDiGraph) = (SimpleWeightedEdge(x[2], x[1], x[3]) for x in zip(findnz(g.weights)...))
