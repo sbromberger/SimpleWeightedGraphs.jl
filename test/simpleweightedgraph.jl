@@ -9,12 +9,12 @@ using SimpleWeightedGraphs
     @test @inferred(eltype(SimpleWeightedGraph(adjmx1))) == Int
     @test_throws ErrorException SimpleWeightedGraph(adjmx2)
 
-    @test @inferred(ne(SimpleWeightedGraph(PathDiGraph(5)))) == 4
+    @test @inferred(ne(SimpleWeightedGraph(path_digraph(5)))) == 4
     @test @inferred(!is_directed(SimpleWeightedGraph))
 
     @test @inferred(eltype(SimpleWeightedDiGraph())) == Int
     @test @inferred(eltype(SimpleWeightedDiGraph(adjmx2))) == Int
-    @test @inferred(ne(SimpleWeightedDiGraph(PathGraph(5)))) == 8
+    @test @inferred(ne(SimpleWeightedDiGraph(path_graph(5)))) == 8
     @test @inferred(is_directed(SimpleWeightedDiGraph))
 
 
@@ -23,7 +23,7 @@ using SimpleWeightedGraphs
         @test @inferred(!add_vertices!(gbig, 10))
     end
 
-    gdx = SimpleWeightedDiGraph(PathDiGraph(4))
+    gdx = SimpleWeightedDiGraph(path_digraph(4))
     gx = SimpleWeightedGraph()
     for g in testgraphs(gx)
         T = eltype(g)
@@ -41,7 +41,7 @@ using SimpleWeightedGraphs
         @test sprint(show, g) == "{5, 0} directed simple $T graph with $U weights"
     end
 
-    gx = SimpleWeightedGraph(PathGraph(4))
+    gx = SimpleWeightedGraph(path_graph(4))
 
     gc = copy(gx)
     @test_logs (:warn, "Note: adding edges with a zero weight to this graph type has no effect.") add_edge!(gc, 4, 1, 0.0)
@@ -56,13 +56,13 @@ using SimpleWeightedGraphs
         @test @inferred(has_edge(g, 3, 2))
 
         gc = copy(g)
-        @test @inferred(add_edge!(gc, 4=>1)) && gc == SimpleWeightedGraph(CycleGraph(4))
+        @test @inferred(add_edge!(gc, 4=>1)) && gc == SimpleWeightedGraph(cycle_graph(4))
         @test @inferred(has_edge(gc, 4=>1)) && has_edge(gc, 0x04=>0x01)
         gc = copy(g)
-        @test @inferred(add_edge!(gc, (4,1))) && gc == SimpleWeightedGraph(CycleGraph(4))
+        @test @inferred(add_edge!(gc, (4,1))) && gc == SimpleWeightedGraph(cycle_graph(4))
         @test @inferred(has_edge(gc, (4,1))) && has_edge(gc, (0x04, 0x01))
         gc = copy(g)
-        @test add_edge!(gc, 4, 1) && gc == SimpleWeightedGraph(CycleGraph(4))
+        @test add_edge!(gc, 4, 1) && gc == SimpleWeightedGraph(cycle_graph(4))
 
         @test @inferred(inneighbors(g, 2)) == @inferred(outneighbors(g, 2)) == @inferred(neighbors(g,2)) == [1,3]
         @test @inferred(add_vertex!(gc))   # out of order, but we want it for issubset
@@ -104,7 +104,7 @@ using SimpleWeightedGraphs
         @test @inferred(has_edge(g, e))
     end
 
-    gdx = SimpleWeightedDiGraph(PathDiGraph(4))
+    gdx = SimpleWeightedDiGraph(path_digraph(4))
 
     gc = copy(gdx)
     @test_logs (:warn, "Note: adding edges with a zero weight to this graph type has no effect.") add_edge!(gc, 4, 1, 0.0)
@@ -122,13 +122,13 @@ using SimpleWeightedGraphs
         @test @inferred(!has_edge(g, 3, 2))
 
         gc = copy(g)
-        @test @inferred(add_edge!(gc, 4=>1)) && gc == SimpleWeightedDiGraph(CycleDiGraph(4))
+        @test @inferred(add_edge!(gc, 4=>1)) && gc == SimpleWeightedDiGraph(cycle_digraph(4))
         @test @inferred(has_edge(gc, 4=>1)) && has_edge(gc, 0x04=>0x01)
         gc = copy(g)
-        @test @inferred(add_edge!(gc, (4,1))) && gc == SimpleWeightedDiGraph(CycleDiGraph(4))
+        @test @inferred(add_edge!(gc, (4,1))) && gc == SimpleWeightedDiGraph(cycle_digraph(4))
         @test @inferred(has_edge(gc, (4,1))) && has_edge(gc, (0x04, 0x01))
         gc = @inferred(copy(g))
-        @test @inferred(add_edge!(gc, 4, 1)) && gc == SimpleWeightedDiGraph(CycleDiGraph(4))
+        @test @inferred(add_edge!(gc, 4, 1)) && gc == SimpleWeightedDiGraph(cycle_digraph(4))
 
         @test @inferred(inneighbors(g, 2)) == [1]
         @test @inferred(outneighbors(g, 2)) == @inferred(neighbors(g,2)) == [3]
@@ -172,7 +172,7 @@ using SimpleWeightedGraphs
         @test @inferred(has_edge(g, e))
     end
 
-    gdx = SimpleWeightedDiGraph(CompleteDiGraph(4))
+    gdx = SimpleWeightedDiGraph(complete_digraph(4))
     for g in testdigraphs(gdx)
         @test rem_vertex!(g, 2)
         @test nv(g) == 3 && ne(g) == 6
@@ -181,7 +181,7 @@ using SimpleWeightedGraphs
     @test sum(weights(g)) == 2 * ne(g) * 3
     @test @inferred(get_weight(g, 1, 2)) == 3
 
-    g = SimpleWeightedDiGraph(PathGraph(5), 4.0)
+    g = SimpleWeightedDiGraph(path_graph(5), 4.0)
     @test sum(weights(g)) == ne(g) * 4.0
 
     gx = Graph(4,3)
@@ -194,11 +194,11 @@ using SimpleWeightedGraphs
         @test eltype(SimpleWeightedGraph(g)) == eltype(g)
     end
 
-    s = SimpleWeightedGraph(PathGraph(5), 2)
+    s = SimpleWeightedGraph(path_graph(5), 2)
     s2 = SimpleWeightedGraph([1,2,3,4], [2,3,4,5], [2,2,2,2])
     @test s == s2
 
-    s = SimpleWeightedDiGraph(PathDiGraph(5), 2)
+    s = SimpleWeightedDiGraph(path_digraph(5), 2)
     s2 = SimpleWeightedDiGraph([1,2,3,4], [2,3,4,5], [2,2,2,2])
     @test s == s2
 

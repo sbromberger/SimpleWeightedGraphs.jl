@@ -1,5 +1,5 @@
 @testset "Overrides" begin
-    g3 = SimpleWeightedGraph(PathGraph(5))
+    g3 = SimpleWeightedGraph(path_graph(5))
     g3_d = [1. 0. 0. 0. 0.;
             0. 2. 0. 0. 0.;
             0. 0. 2. 0. 0.;
@@ -37,7 +37,7 @@
         @test adjacency_matrix(g; dir=:out) == adjacency_matrix(g; dir=:in)'
         @test issymmetric(laplacian_matrix(g))
         @test laplacian_matrix(g, Float64) ≈ g3_l
-        @test g[1:3] == SimpleWeightedGraph{eltype(g), weighttype(g)}(PathGraph(3))
+        @test g[1:3] == SimpleWeightedGraph{eltype(g), weighttype(g)}(path_graph(3))
         gx = copy(g)
         add_edge!(gx, 2, 3, 99)
         gi = gx[2:4]
@@ -66,7 +66,7 @@
         @test_throws ErrorException pagerank(g, 2)
         @test_throws ErrorException pagerank(g, 0.85, 2)
 
-        gc = SimpleWeightedDiGraph(PathDiGraph(2), 2)
+        gc = SimpleWeightedDiGraph(path_digraph(2), 2)
         @test g[2:3] == SimpleWeightedDiGraph{eltype(g5), weighttype(g5)}(gc)
         @test weights(g[2:3])[1, 2] == 2
     end
