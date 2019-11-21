@@ -39,7 +39,7 @@ function laplacian_matrix(g::AbstractSimpleWeightedGraph, T::DataType=weighttype
     degree_matrix(g, T; dir=dir) - adjacency_matrix(g, T; dir=dir)
 end
 
-function pagerank(g::SimpleWeightedDiGraph, α=0.85, n=100::Integer, ϵ=1.0e-6)
+function pagerank(g::SimpleWeightedDiGraph, α=0.85, n::Integer=100, ϵ=1.0e-6)
     A = weights(g)
     S = vec(sum(A, dims=1))
     S = 1 ./ S
