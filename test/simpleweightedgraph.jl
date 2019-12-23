@@ -222,4 +222,20 @@ using SimpleWeightedGraphs
     @test SimpleDiGraph(SimpleWeightedDiGraph(cycle_graph(4))) == SimpleDiGraph(cycle_graph(4))
     @test SimpleGraph(SimpleWeightedGraph(path_graph(5))) == path_graph(5)
 
+    @testset "Getting weights" begin
+        @testset "Testing $G" for G in (SimpleWeightedGraph, SimpleWeightedDiGraph)
+            g = G(3)
+            @test g[1, 2, Val{:weight}()] ≈ 0
+            @test g[1, 3, Val{:weight}()] ≈ 0
+            @test_throws BoundsError g[3, 4, Val{:weight}()]
+            @test g[1, 2, Val{:wight}()] === nothing
+            add_edge!(g, 1, 2, 5.0)
+            @test g[1, 2, Val{:weight}()] ≈ 5
+            if is_directed(G)
+                @test g[2, 1, Val{:weight}()] ≈ 0
+            else
+                @test g[2, 1, Val{:weight}()] ≈ 5
+            end
+        end
+    end
 end

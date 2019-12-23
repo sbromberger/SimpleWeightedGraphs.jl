@@ -117,3 +117,25 @@ Return `true` if `g` is a directed graph.
 is_directed(::Type{SimpleWeightedDiGraph}) = true
 is_directed(::Type{SimpleWeightedDiGraph{T,U}}) where T where U = true
 is_directed(g::SimpleWeightedDiGraph) = true
+
+"""
+    g[e::SimpleWeightedGraph, Val{:weight}()]
+
+Equivalent to g[src(e), dst(e)].
+"""
+function Base.getindex(g::SimpleWeightedDiGraph{T, U}, e::SimpleWeightedGraphEdge, ::Val{:weight}) where {T, U, S}
+    return g.weights[dst(e), src(e)]
+end
+
+"""
+    g[e::SimpleWeightedGraph, i::Integer, j::Integer, Val{:weight}()]
+
+Return the weight of edge (i, j).
+"""
+function Base.getindex(g::SimpleWeightedDiGraph{T, U}, i::Integer, j::Integer, ::Val{:weight}) where {T, U, S}
+    return g.weights[j, i]
+end
+
+function Base.getindex(g::SimpleWeightedDiGraph{T, U}, i::Integer, j::Integer, ::Val{S}) where {T, U, S}
+    return nothing
+end

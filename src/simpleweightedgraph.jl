@@ -145,3 +145,15 @@ Return `true` if `g` is a directed graph.
 is_directed(::Type{SimpleWeightedGraph}) = false
 is_directed(::Type{SimpleWeightedGraph{T, U}}) where T where U = false
 is_directed(g::SimpleWeightedGraph) = false
+
+function Base.getindex(g::SimpleWeightedGraph{T, U}, e::SimpleWeightedGraphEdge, ::Val{:weight}) where {T, U, S}
+    return g.weights[src(e), dst(e)]
+end
+
+function Base.getindex(g::SimpleWeightedGraph{T, U}, i::Integer, j::Integer, ::Val{:weight}) where {T, U, S}
+    return g.weights[i, j]
+end
+
+function Base.getindex(g::SimpleWeightedGraph{T, U}, i::Integer, j::Integer, ::Val{S}) where {T, U, S}
+    return nothing
+end
