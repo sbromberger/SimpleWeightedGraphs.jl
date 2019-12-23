@@ -9,8 +9,8 @@ see MetaGraphs.jl for possible alternatives.
 mutable struct SimpleWeightedDiGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
     weights::SparseMatrixCSC{U, T} # indexed by [dst, src]
     function SimpleWeightedDiGraph{T, U}(adjmx::SparseMatrixCSC{U,T}; permute=true) where T <: Integer where U <: Real
-        dima,dimb = size(adjmx)
-        isequal(dima,dimb) || error("Adjacency / distance matrices must be square")
+        dima, dimb = size(adjmx)
+        isequal(dima, dimb) || error("Adjacency / distance matrices must be square")
         permute ? new{T, U}(permutedims(adjmx)) : new{T, U}(adjmx)
     end
 
@@ -53,16 +53,14 @@ SimpleWeightedDiGraph(::Type{T}) where T<:Integer = SimpleWeightedDiGraph{T, Flo
 # Graph(UInt8, Float32)
 SimpleWeightedDiGraph(::Type{T}, ::Type{U}) where T<:Integer where U<:Real = SimpleWeightedDiGraph{U, T}(zero(T))
 
-# DiGraph(AbstractSimpleGraph)
-function SimpleWeightedDiGraph(g::LightGraphs.SimpleGraphs.AbstractSimpleGraph, ::Type{U}=Float64) where U <: Real
-    T = eltype(g)
+# DiGraph(AbstractGraph)
+function SimpleWeightedDiGraph(g::LightGraphs.AbstractGraph{T}, ::Type{U}=Float64) where {U <: Real, T}
     return SimpleWeightedDiGraph{T}(adjacency_matrix(g, U))
 end
 
-# DiGraph(AbstractSimpleGraph, defaultweight)
-function SimpleWeightedDiGraph(g::LightGraphs.SimpleGraphs.AbstractSimpleGraph, x::U) where U <: Real
-    T = eltype(g)
-    return SimpleWeightedDiGraph{T, U}(x.*adjacency_matrix(g, U))
+# DiGraph(AbstractGraph, defaultweight)
+function SimpleWeightedDiGraph(g::LightGraphs.AbstractGraph{T}, x::U) where {U <: Real, T}
+    return SimpleWeightedDiGraph{T, U}(x .* adjacency_matrix(g, U))
 end
 
 # DiGraph(srcs, dsts, weights)
