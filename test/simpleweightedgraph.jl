@@ -177,7 +177,7 @@ using SimpleWeightedGraphs
         @test rem_vertex!(g, 2)
         @test nv(g) == 3 && ne(g) == 6
     end
-    g = SimpleWeightedGraph(CompleteGraph(3), 3)
+    g = SimpleWeightedGraph(complete_graph(3), 3)
     @test sum(weights(g)) == 2 * ne(g) * 3
     @test @inferred(get_weight(g, 1, 2)) == 3
 
@@ -219,7 +219,7 @@ using SimpleWeightedGraphs
     @test s.weights[1,2] == 1
     @test s.weights[2,1] == 2
 
-    @test SimpleDiGraph(SimpleWeightedDiGraph(CycleGraph(4))) == SimpleDiGraph(CycleGraph(4))
-    @test SimpleGraph(SimpleWeightedGraph(PathGraph(5))) == PathGraph(5)
+    @test SimpleDiGraph(SimpleWeightedDiGraph(cycle_graph(4))) == SimpleDiGraph(cycle_graph(4))
+    @test SimpleGraph(SimpleWeightedGraph(path_graph(5))) == path_graph(5)
 
 end
