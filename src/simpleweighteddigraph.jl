@@ -123,7 +123,7 @@ is_directed(g::SimpleWeightedDiGraph) = true
 
 Equivalent to g[src(e), dst(e)].
 """
-function Base.getindex(g::SimpleWeightedDiGraph{T, U}, e::SimpleWeightedGraphEdge, ::Val{:weight}) where {T, U, S}
+function Base.getindex(g::SimpleWeightedDiGraph{T, U}, e::AbstractEdge, ::Val{:weight}) where {T, U, S}
     return g.weights[dst(e), src(e)]
 end
 
@@ -134,8 +134,4 @@ Return the weight of edge (i, j).
 """
 function Base.getindex(g::SimpleWeightedDiGraph{T, U}, i::Integer, j::Integer, ::Val{:weight}) where {T, U, S}
     return g.weights[j, i]
-end
-
-function Base.getindex(g::SimpleWeightedDiGraph{T, U}, i::Integer, j::Integer, ::Val{S}) where {T, U, S}
-    return nothing
 end
