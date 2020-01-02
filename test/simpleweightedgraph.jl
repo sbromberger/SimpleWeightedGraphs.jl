@@ -228,7 +228,7 @@ using SimpleWeightedGraphs
             @test g[1, 2, Val{:weight}()] ≈ 0
             @test g[1, 3, Val{:weight}()] ≈ 0
             @test_throws BoundsError g[3, 4, Val{:weight}()]
-            @test g[1, 2, Val{:wight}()] === nothing
+            @test_throws MethodError g[1, 2, Val{:wight}()]
             add_edge!(g, 1, 2, 5.0)
             @test g[1, 2, Val{:weight}()] ≈ 5
             if is_directed(G)

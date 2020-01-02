@@ -5,10 +5,14 @@ A type representing a directed graph with weights of type `U`.
 
 Note that adding or removing vertices or edges is not particularly performant;
 see MetaGraphs.jl for possible alternatives.
+
+The primary constructor takes a sparse adjacency matrix as input, of which
+the transpose is stored.
+To provide the transpose directly, the keyword argument `permute=true` can be used.
 """
 mutable struct SimpleWeightedDiGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
     weights::SparseMatrixCSC{U, T} # indexed by [dst, src]
-    function SimpleWeightedDiGraph{T, U}(adjmx::SparseMatrixCSC{U,T}; permute=true) where T <: Integer where U <: Real
+    function SimpleWeightedDiGraph{T, U}(adjmx::SparseMatrixCSC{U,T}; permute=true) where {T <: Integer, U <: Real}
         dima, dimb = size(adjmx)
         isequal(dima, dimb) || error("Adjacency / distance matrices must be square")
         permute ? new{T, U}(permutedims(adjmx)) : new{T, U}(adjmx)
@@ -16,21 +20,21 @@ mutable struct SimpleWeightedDiGraph{T<:Integer, U<:Real} <: AbstractSimpleWeigh
 
 end
 
-SimpleWeightedDiGraph{T}(adjmx::SparseMatrixCSC{U, T}; permute=true) where T<:Integer where U<:Real =
+SimpleWeightedDiGraph{T}(adjmx::SparseMatrixCSC{U, T}; permute=true) where {T<:Integer, U<:Real} =
     SimpleWeightedDiGraph{T, U}(adjmx; permute=permute)
 
-SimpleWeightedDiGraph(adjmx::SparseMatrixCSC{U, T}; permute=true) where T<:Integer where U<:Real =
+SimpleWeightedDiGraph(adjmx::SparseMatrixCSC{U, T}; permute=true) where {T<:Integer, U<:Real} =
     SimpleWeightedDiGraph{T, U}(adjmx; permute=permute)
 
-SimpleWeightedDiGraph(m::AbstractMatrix{U}) where U <: Real =
+SimpleWeightedDiGraph(m::AbstractMatrix{U}) where {U <: Real} =
     SimpleWeightedDiGraph{Int, U}(SparseMatrixCSC{U, Int}(m))
-SimpleWeightedDiGraph{T}(m::AbstractMatrix{U}) where T<:Integer where U<:Real =
+SimpleWeightedDiGraph{T}(m::AbstractMatrix{U}) where {T <: Integer, U <: Real} =
     SimpleWeightedDiGraph{T, U}(SparseMatrixCSC{U, T}(m))
-SimpleWeightedDiGraph{T, U}(m::AbstractMatrix) where T<:Integer where U<:Real =
+SimpleWeightedDiGraph{T, U}(m::AbstractMatrix) where {T <: Integer, U <: Real} =
     SimpleWeightedDiGraph{T, U}(SparseMatrixCSC{U, T}(m))
 
 SimpleWeightedDiGraph(g::SimpleWeightedDiGraph) = SimpleWeightedDiGraph(g.weights, false)
-SimpleWeightedDiGraph{T,U}(g::SimpleWeightedDiGraph) where T<:Integer where U<:Real =
+SimpleWeightedDiGraph{T,U}(g::SimpleWeightedDiGraph) where {T <: Integer, U <: Real} =
     SimpleWeightedDiGraph(SparseMatrixCSC{U, T}(g.weights); permute=false)
 
 
@@ -53,20 +57,25 @@ SimpleWeightedDiGraph(::Type{T}) where T<:Integer = SimpleWeightedDiGraph{T, Flo
 # Graph(UInt8, Float32)
 SimpleWeightedDiGraph(::Type{T}, ::Type{U}) where T<:Integer where U<:Real = SimpleWeightedDiGraph{U, T}(zero(T))
 
-# DiGraph(AbstractGraph)
+# DiGraph(AbstractGraph, ::Type{U})
 function SimpleWeightedDiGraph(g::LightGraphs.AbstractGraph{T}, ::Type{U}=Float64) where {U <: Real, T}
     return SimpleWeightedDiGraph{T}(adjacency_matrix(g, U))
 end
 
-# DiGraph(AbstractGraph, defaultweight)
+"""
+    DiGraph(g::AbstractGraph, x::Real)
+
+Construct a weighted digraph from other graph `g` with initial weight `x`.
+"""
 function SimpleWeightedDiGraph(g::LightGraphs.AbstractGraph{T}, x::U) where {U <: Real, T}
-    return SimpleWeightedDiGraph{T, U}(x .* adjacency_matrix(g, U))
+    m = adjacency_matrix(g, U)'
+    return SimpleWeightedDiGraph{T, U}(x .* m, permute=false)
 end
 
 # DiGraph(srcs, dsts, weights)
 function SimpleWeightedDiGraph(i::AbstractVector{T}, j::AbstractVector{T}, v::AbstractVector{U}; combine = +) where T<:Integer where U<:Real
     m = max(maximum(j), maximum(i))
-    SimpleWeightedDiGraph{T, U}(sparse(j, i, v, m, m, combine); permute=false)
+    SimpleWeightedDiGraph{T, U}(sparse(j, i, v, m, m, combine), permute=false)
 end
 
 LightGraphs.SimpleDiGraph(g::SimpleWeightedDiGraph) = SimpleDiGraph(g.weights)

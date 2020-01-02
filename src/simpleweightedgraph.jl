@@ -9,7 +9,7 @@ see MetaGraphs.jl for possible alternatives.
 """
 mutable struct SimpleWeightedGraph{T<:Integer, U<:Real} <: AbstractSimpleWeightedGraph{T, U}
     weights::SparseMatrixCSC{U,T}
-    function SimpleWeightedGraph{T, U}(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real
+    function SimpleWeightedGraph{T, U}(adjmx::SparseMatrixCSC{U, T}) where {T<:Integer, U<:Real}
         dima,dimb = size(adjmx)
         isequal(dima,dimb) || error("Adjacency / distance matrices must be square")
         issymmetric(adjmx) || error("Adjacency / distance matrices must be symmetric")
@@ -20,13 +20,13 @@ end
 
 ne(g::SimpleWeightedGraph) = nnz(g.weights) ÷ 2
 
-SimpleWeightedGraph{T}(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real =
+SimpleWeightedGraph{T}(adjmx::SparseMatrixCSC{U, T}) where {T <: Integer, U <: Real} =
     SimpleWeightedGraph{T, U}(adjmx)
 
-SimpleWeightedGraph(adjmx::SparseMatrixCSC{U, T}) where T<:Integer where U<:Real =
+SimpleWeightedGraph(adjmx::SparseMatrixCSC{U, T}) where {T <: Integer, U <: Real} =
     SimpleWeightedGraph{T, U}(adjmx)
 
-SimpleWeightedGraph(m::AbstractMatrix{U}) where U <: Real =
+SimpleWeightedGraph(m::AbstractMatrix{U}) where {U <: Real} =
     SimpleWeightedGraph{Int, U}(SparseMatrixCSC{U, Int}(m))
 SimpleWeightedGraph{T}(m::AbstractMatrix{U}) where T<:Integer where U<:Real =
     SimpleWeightedGraph{T, U}(SparseMatrixCSC{U, T}(m))
@@ -44,7 +44,6 @@ function (::Type{SimpleWeightedGraph{T, U}})(n::Integer = 0) where T<:Integer wh
     weights = spzeros(U, T, T(n), T(n))
     return SimpleWeightedGraph{T, U}(weights)
 end
-
 
 # Graph()
 SimpleWeightedGraph() = SimpleWeightedGraph(Matrix{Float64}(undef, 0, 0))
