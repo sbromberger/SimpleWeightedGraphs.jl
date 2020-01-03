@@ -34,9 +34,9 @@ SimpleWeightedGraph{T, U}(m::AbstractMatrix) where T<:Integer where U<:Real =
     SimpleWeightedGraph{T, U}(SparseMatrixCSC{U, T}(m))
 
 
-SimpleWeightedGraph(g::SimpleWeightedGraph) = SimpleWeightedGraph(g.weights)
+SimpleWeightedGraph(g::SimpleWeightedGraph) = SimpleWeightedGraph(copy(g.weights))
 function SimpleWeightedGraph{T,U}(g::SimpleWeightedGraph) where {T<:Integer, U<:Real}
-    return SimpleWeightedGraph(SparseMatrixCSC{U, T}(g.weights))
+    return SimpleWeightedGraph(SparseMatrixCSC{U, T}(copy(g.weights)))
 end
 
 # Graph{UInt8}(6), Graph{Int16}(7), Graph{UInt8}()

@@ -269,14 +269,26 @@ using SimpleWeightedGraphs
     @testset "Copying graph copies matrix" begin
         dg = SimpleWeightedDiGraph(cycle_digraph(4))
         dg2 = SimpleWeightedDiGraph(dg)
-        @test dg[1, 3, Val{:weight}()] ≈ 0.0
-        @test dg2[1, 3, Val{:weight}()] ≈ 0.0
+        @test dg[1, 3, Val{:weight}()] ≈ 0
+        @test dg2[1, 3, Val{:weight}()] ≈ 0
         @test add_edge!(dg, 1, 3, 2.5)
         @test dg[1, 3, Val{:weight}()] ≈ 2.5
-        @test dg2[1, 3, Val{:weight}()] ≈ 0.0
+        @test dg2[1, 3, Val{:weight}()] ≈ 0
         dg3 = SimpleWeightedDiGraph{Int, Float64}(dg)
         @test add_edge!(dg, 1, 4, 3.5)
         @test dg[1, 4, Val{:weight}()] ≈ 3.5
-        @test dg3[1, 4, Val{:weight}()] ≈ 0.
+        @test dg3[1, 4, Val{:weight}()] ≈ 0
+
+        g = SimpleWeightedGraph(cycle_graph(5))
+        g2 = SimpleWeightedGraph(g)
+        @test g[1, 3, Val{:weight}()] ≈ 0
+        @test g2[1, 3, Val{:weight}()] ≈ 0
+        @test add_edge!(g, 1, 3, 2.5)
+        @test g[1, 3, Val{:weight}()] ≈ 2.5
+        @test g2[1, 3, Val{:weight}()] ≈ 0.0
+        g3 = SimpleWeightedDiGraph{Int, Float64}(g)
+        @test add_edge!(g, 1, 4, 3.5)
+        @test g[1, 4, Val{:weight}()] ≈ 3.5
+        @test g3[1, 4, Val{:weight}()] ≈ 0
     end
 end

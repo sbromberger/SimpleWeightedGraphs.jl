@@ -117,15 +117,7 @@ copy(g::SimpleWeightedDiGraph) =  SimpleWeightedDiGraph(copy(g.weights'))
 
 ==(g::SimpleWeightedDiGraph, h::SimpleWeightedDiGraph) = g.weights == h.weights
 
-
-"""
-    is_directed(g)
-
-Return `true` if `g` is a directed graph.
-"""
-is_directed(::Type{SimpleWeightedDiGraph}) = true
-is_directed(::Type{SimpleWeightedDiGraph{T,U}}) where T where U = true
-is_directed(g::SimpleWeightedDiGraph) = true
+is_directed(::Type{<:SimpleWeightedDiGraph}) = true
 
 """
     g[e::SimpleWeightedGraph, Val{:weight}()]
