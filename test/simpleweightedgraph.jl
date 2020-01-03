@@ -290,5 +290,21 @@ using SimpleWeightedGraphs
         @test add_edge!(g, 1, 4, 3.5)
         @test g[1, 4, Val{:weight}()] ≈ 3.5
         @test g3[1, 4, Val{:weight}()] ≈ 0
+
+        # copy from undirected to directed
+        g = SimpleWeightedGraph(cycle_graph(4), 0.5)
+        dg = SimpleWeightedDiGraph(g)
+        @test g[1,3,Val{:weight}()] ≈ 0
+        add_edge!(g, 1, 3, 6.5)
+        @test g[1,3,Val{:weight}()] ≈ 6.5
+        @test dg[1,3,Val{:weight}()] ≈ 0
+
+        dg = SimpleWeightedDiGraph(cycle_digraph(4), 0.5)
+        @test dg[2, 1, Val{:weight}()] ≈ 0
+        add_edge!(dg, 2, 1, 0.6)
+        g = SimpleWeightedGraph(dg)
+        @test g[1, 2, Val{:weight}()] ≈ 1.1        
+        @test g[1, 3, Val{:weight}()] ≈ 0
+        @test g[2, 3, Val{:weight}()] ≈ 0.5
     end
 end
