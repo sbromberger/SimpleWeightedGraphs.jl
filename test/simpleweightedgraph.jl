@@ -226,6 +226,7 @@ using SimpleWeightedGraphs
     @test SimpleWeightedDiGraph(cycle_digraph(4)) == SimpleWeightedDiGraph(SimpleWeightedDiGraph(cycle_digraph(4)))
 
     @test SimpleWeightedDiGraph(Matrix(adjacency_matrix(cycle_digraph(4)))) == SimpleWeightedDiGraph(cycle_digraph(4))
+    @test SimpleWeightedDiGraph{Int32}(Matrix(adjacency_matrix(cycle_digraph(4)))) == SimpleWeightedDiGraph{Int32, Float64}(SimpleWeightedDiGraph(cycle_digraph(4)))
 
     @testset "Typed constructors $T" for T in (UInt8, UInt32, Int, Int32)
         g = SimpleWeightedGraph(T)
@@ -257,12 +258,15 @@ using SimpleWeightedGraphs
             @test_throws BoundsError g[3, 4, Val{:weight}()]
             @test_throws MethodError g[1, 2, Val{:wight}()]
             add_edge!(g, 1, 2, 5.0)
+            
             @test g[1, 2, Val{:weight}()] ≈ 5
             if is_directed(G)
                 @test g[2, 1, Val{:weight}()] ≈ 0
             else
                 @test g[2, 1, Val{:weight}()] ≈ 5
             end
+            m = adjacency_matrix(g)
+            @test g[2, 1, Val{:weight}()] ≈ g.weights[1, 2]
         end
     end
 
