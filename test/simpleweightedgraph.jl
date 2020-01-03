@@ -222,11 +222,27 @@ using SimpleWeightedGraphs
     @test SimpleDiGraph(SimpleWeightedDiGraph(cycle_graph(4))) == SimpleDiGraph(cycle_graph(4))
     @test SimpleGraph(SimpleWeightedGraph(path_graph(5))) == path_graph(5)
 
+    @test SimpleWeightedGraph(cycle_graph(4)) == SimpleWeightedGraph(SimpleWeightedGraph(cycle_graph(4)))
+
+    @testset "Typed constructors $T" for T in (UInt8, UInt32, Int, Int32)
+        g = SimpleWeightedGraph(T)
+        @test g isa AbstractGraph{T}
+        @test g isa SimpleWeightedGraph{T, Float64}
+        for U in (Float16, Float32)
+            g = SimpleWeightedGraph(T, U)
+            @test g isa AbstractGraph{T}
+            @test g isa SimpleWeightedGraph{T, U}
+        end
+    end
+
     @testset "Getting weights" begin
         @testset "Testing $G" for G in (SimpleWeightedGraph, SimpleWeightedDiGraph)
             g = G(3)
             @test g[1, 2, Val{:weight}()] ≈ 0
             @test g[1, 3, Val{:weight}()] ≈ 0
+            for e in edges(g)
+                @test g[e, Val{:weight}] ≈ 0
+            end
             @test_throws BoundsError g[3, 4, Val{:weight}()]
             @test_throws MethodError g[1, 2, Val{:wight}()]
             add_edge!(g, 1, 2, 5.0)

@@ -55,11 +55,11 @@ SimpleWeightedGraph(n::T) where T<:Integer = SimpleWeightedGraph{T, Float64}(n)
 SimpleWeightedGraph(::Type{T}) where T<:Integer = SimpleWeightedGraph{T, Float64}(zero(T))
 
 # Graph(UInt8, Float32)
-SimpleWeightedGraph(::Type{T}, ::Type{U}) where T<:Integer where U<:Real = SimpleWeightedGraph{U, T}(zero(T))
+SimpleWeightedGraph(::Type{T}, ::Type{U}) where {T<:Integer, U<:Real} = SimpleWeightedGraph{T, U}(zero(T))
 
 # Graph(SimpleGraph)
 
-function SimpleWeightedGraph(g::LightGraphs.AbstractGraph{T}, ::Type{U}=Float64) where {T <: Integer,U <: Real}
+function SimpleWeightedGraph(g::LightGraphs.AbstractGraph{T}, ::Type{U}=Float64) where {T <: Integer, U <: Real}
     adj_matrix = if LightGraphs.is_directed(g)
         # TODO abstract function instead of SimpleGraph constructor
         adjacency_matrix(LightGraphs.SimpleGraphs.SimpleGraph(g), U)
@@ -135,15 +135,7 @@ end
 
 ==(g::SimpleWeightedGraph, h::SimpleWeightedGraph) = g.weights == h.weights
 
-
-"""
-    is_directed(g)
-
-Return `true` if `g` is a directed graph.
-"""
-is_directed(::Type{SimpleWeightedGraph}) = false
-is_directed(::Type{SimpleWeightedGraph{T, U}}) where T where U = false
-is_directed(g::SimpleWeightedGraph) = false
+is_directed(::Type{<:SimpleWeightedGraph}) = false
 
 function Base.getindex(g::SimpleWeightedGraph{T, U}, e::AbstractEdge, ::Val{:weight}) where {T, U, S}
     return g.weights[src(e), dst(e)]
