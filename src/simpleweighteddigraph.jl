@@ -33,14 +33,14 @@ SimpleWeightedDiGraph{T}(m::AbstractMatrix{U}) where {T <: Integer, U <: Real} =
 SimpleWeightedDiGraph{T, U}(m::AbstractMatrix) where {T <: Integer, U <: Real} =
     SimpleWeightedDiGraph{T, U}(SparseMatrixCSC{U, T}(m))
 
-SimpleWeightedDiGraph(g::SimpleWeightedDiGraph) = SimpleWeightedDiGraph(g.weights, false)
+SimpleWeightedDiGraph(g::SimpleWeightedDiGraph) = SimpleWeightedDiGraph(copy(g.weights), permute=false)
 SimpleWeightedDiGraph{T,U}(g::SimpleWeightedDiGraph) where {T <: Integer, U <: Real} =
-    SimpleWeightedDiGraph(SparseMatrixCSC{U, T}(g.weights); permute=false)
+    SimpleWeightedDiGraph(SparseMatrixCSC{U, T}(copy(g.weights)), permute=false)
 
 
 ne(g::SimpleWeightedDiGraph) = nnz(g.weights)
 
-function SimpleWeightedDiGraph{T,U}(n::Integer = 0) where T<:Integer where U<:Real
+function SimpleWeightedDiGraph{T,U}(n::Integer = 0) where {T<:Integer, U<:Real}
     weights = spzeros(U, T, T(n), T(n))
     return SimpleWeightedDiGraph{T, U}(weights)
 end
@@ -55,7 +55,7 @@ SimpleWeightedDiGraph(n::T) where T<:Integer = SimpleWeightedDiGraph{T, Float64}
 SimpleWeightedDiGraph(::Type{T}) where T<:Integer = SimpleWeightedDiGraph{T, Float64}(zero(T))
 
 # Graph(UInt8, Float32)
-SimpleWeightedDiGraph(::Type{T}, ::Type{U}) where T<:Integer where U<:Real = SimpleWeightedDiGraph{U, T}(zero(T))
+SimpleWeightedDiGraph(::Type{T}, ::Type{U}) where {T <: Integer, U <: Real} = SimpleWeightedDiGraph{T, U}(zero(T))
 
 # DiGraph(AbstractGraph, ::Type{U})
 function SimpleWeightedDiGraph(g::LightGraphs.AbstractGraph{T}, ::Type{U}=Float64) where {U <: Real, T}

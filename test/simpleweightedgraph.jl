@@ -223,15 +223,24 @@ using SimpleWeightedGraphs
     @test SimpleGraph(SimpleWeightedGraph(path_graph(5))) == path_graph(5)
 
     @test SimpleWeightedGraph(cycle_graph(4)) == SimpleWeightedGraph(SimpleWeightedGraph(cycle_graph(4)))
+    @test SimpleWeightedDiGraph(cycle_digraph(4)) == SimpleWeightedDiGraph(SimpleWeightedDiGraph(cycle_digraph(4)))
+
+    @test SimpleWeightedDiGraph(Matrix(adjacency_matrix(cycle_digraph(4)))) == SimpleWeightedDiGraph(cycle_digraph(4))
 
     @testset "Typed constructors $T" for T in (UInt8, UInt32, Int, Int32)
         g = SimpleWeightedGraph(T)
         @test g isa AbstractGraph{T}
         @test g isa SimpleWeightedGraph{T, Float64}
+        dg = SimpleWeightedDiGraph(T)
+        @test dg isa AbstractGraph{T}
+        @test dg isa SimpleWeightedDiGraph{T, Float64}
         for U in (Float16, Float32)
             g = SimpleWeightedGraph(T, U)
             @test g isa AbstractGraph{T}
             @test g isa SimpleWeightedGraph{T, U}
+            dg = SimpleWeightedDiGraph(T, U)
+            @test dg isa AbstractGraph{T}
+            @test dg isa SimpleWeightedDiGraph{T, U}
         end
     end
 
@@ -255,5 +264,19 @@ using SimpleWeightedGraphs
                 @test g[2, 1, Val{:weight}()] ≈ 5
             end
         end
+    end
+
+    @testset "Copying graph copies matrix" begin
+        dg = SimpleWeightedDiGraph(cycle_digraph(4))
+        dg2 = SimpleWeightedDiGraph(dg)
+        @test dg[1, 3, Val{:weight}()] ≈ 0.0
+        @test dg2[1, 3, Val{:weight}()] ≈ 0.0
+        @test add_edge!(dg, 1, 3, 2.5)
+        @test dg[1, 3, Val{:weight}()] ≈ 2.5
+        @test dg2[1, 3, Val{:weight}()] ≈ 0.0
+        dg3 = SimpleWeightedDiGraph{Int, Float64}(dg)
+        @test add_edge!(dg, 1, 4, 3.5)
+        @test dg[1, 4, Val{:weight}()] ≈ 3.5
+        @test dg3[1, 4, Val{:weight}()] ≈ 0.
     end
 end
