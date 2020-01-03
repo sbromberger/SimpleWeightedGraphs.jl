@@ -228,7 +228,7 @@ using SimpleWeightedGraphs
     @test SimpleWeightedDiGraph(Matrix(adjacency_matrix(cycle_digraph(4)))) == SimpleWeightedDiGraph(cycle_digraph(4))
     @test SimpleWeightedDiGraph{Int32}(Matrix(adjacency_matrix(cycle_digraph(4)))) == SimpleWeightedDiGraph{Int32, Float64}(SimpleWeightedDiGraph(cycle_digraph(4)))
 
-    @testset "Typed constructors $T" for T in (UInt8, UInt32, Int, Int32)
+    @testset "Typed constructors $T" for T in (UInt8, Int32)
         g = SimpleWeightedGraph(T)
         @test g isa AbstractGraph{T}
         @test g isa SimpleWeightedGraph{T, Float64}
