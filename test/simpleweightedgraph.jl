@@ -285,7 +285,12 @@ using SimpleWeightedGraphs
         @test add_edge!(dg, 1, 4, 3.5)
         @test dg[1, 4, Val{:weight}()] ≈ 3.5
         @test dg3[1, 4, Val{:weight}()] ≈ 0
-
+        g1 = SimpleWeightedGraph{Int, Float64}(dg)
+        g2 = SimpleWeightedGraph(dg)
+        @test g1 == g2
+        @test ne(g1) == 5 # 1-2 1-3 2-3 3-4 4-1
+        @test g1[1, 3, Val{:weight}()] ≈ 2.5
+        
         g = SimpleWeightedGraph(cycle_graph(5))
         g2 = SimpleWeightedGraph(g)
         @test g[1, 3, Val{:weight}()] ≈ 0
