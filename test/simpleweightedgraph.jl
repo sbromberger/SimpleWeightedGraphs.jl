@@ -242,6 +242,8 @@ using SimpleWeightedGraphs
             @test g[1, 3, Val{:weight}()] ≈ 0
             for e in edges(g)
                 @test g[e, Val{:weight}] ≈ 0
+                esimple = SimpleEdge(src(e), dst(e))
+                @test g[esimple, Val{:weight}] ≈ 0
             end
             @test_throws BoundsError g[3, 4, Val{:weight}()]
             @test_throws MethodError g[1, 2, Val{:wight}()]
