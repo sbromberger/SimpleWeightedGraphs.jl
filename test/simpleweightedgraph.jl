@@ -222,4 +222,101 @@ using SimpleWeightedGraphs
     @test SimpleDiGraph(SimpleWeightedDiGraph(cycle_graph(4))) == SimpleDiGraph(cycle_graph(4))
     @test SimpleGraph(SimpleWeightedGraph(path_graph(5))) == path_graph(5)
 
+    @test SimpleWeightedGraph(cycle_graph(4)) == SimpleWeightedGraph(SimpleWeightedGraph(cycle_graph(4)))
+    @test SimpleWeightedDiGraph(cycle_digraph(4)) == SimpleWeightedDiGraph(SimpleWeightedDiGraph(cycle_digraph(4)))
+
+    @test SimpleWeightedDiGraph(Matrix(adjacency_matrix(cycle_digraph(4)))) == SimpleWeightedDiGraph(cycle_digraph(4))
+    @test SimpleWeightedDiGraph{Int32}(Matrix(adjacency_matrix(cycle_digraph(4)))) == SimpleWeightedDiGraph{Int32, Float64}(SimpleWeightedDiGraph(cycle_digraph(4)))
+
+    @test SimpleWeightedGraph{Int32}(Matrix(adjacency_matrix(cycle_graph(4)))) == SimpleWeightedGraph{Int32, Float64}(SimpleWeightedGraph(cycle_graph(4)))
+    @test SimpleWeightedGraph{Int32}(adjacency_matrix(cycle_graph(4))) == SimpleWeightedGraph{Int32, Float64}(SimpleWeightedGraph(cycle_graph(4)))
+
+    @testset "Typed constructors $T" for T in (UInt8, Int32)
+        g = SimpleWeightedGraph(T)
+        @test g isa AbstractGraph{T}
+        @test g isa SimpleWeightedGraph{T, Float64}
+        dg = SimpleWeightedDiGraph(T)
+        @test dg isa AbstractGraph{T}
+        @test dg isa SimpleWeightedDiGraph{T, Float64}
+        for U in (Float16, Float32)
+            g = SimpleWeightedGraph(T, U)
+            @test g isa AbstractGraph{T}
+            @test g isa SimpleWeightedGraph{T, U}
+            dg = SimpleWeightedDiGraph(T, U)
+            @test dg isa AbstractGraph{T}
+            @test dg isa SimpleWeightedDiGraph{T, U}
+        end
+    end
+
+    @testset "Getting weights" begin
+        @testset "Testing $G" for G in (SimpleWeightedGraph, SimpleWeightedDiGraph)
+            g = G(3)
+            @test g[1, 2, Val{:weight}()] ≈ 0
+            @test g[1, 3, Val{:weight}()] ≈ 0
+            for e in edges(g)
+                @test g[e, Val{:weight}] ≈ 0
+                esimple = SimpleEdge(src(e), dst(e))
+                @test g[esimple, Val{:weight}] ≈ 0
+            end
+            @test_throws BoundsError g[3, 4, Val{:weight}()]
+            @test_throws MethodError g[1, 2, Val{:wight}()]
+            add_edge!(g, 1, 2, 5.0)
+            
+            @test g[1, 2, Val{:weight}()] ≈ 5
+            if is_directed(G)
+                @test g[2, 1, Val{:weight}()] ≈ 0
+            else
+                @test g[2, 1, Val{:weight}()] ≈ 5
+            end
+            m = adjacency_matrix(g)
+            @test g[2, 1, Val{:weight}()] ≈ g.weights[1, 2]
+        end
+    end
+
+    @testset "Copying graph copies matrix" begin
+        dg = SimpleWeightedDiGraph(cycle_digraph(4))
+        dg2 = SimpleWeightedDiGraph(dg)
+        @test dg[1, 3, Val{:weight}()] ≈ 0
+        @test dg2[1, 3, Val{:weight}()] ≈ 0
+        @test add_edge!(dg, 1, 3, 2.5)
+        @test dg[1, 3, Val{:weight}()] ≈ 2.5
+        @test dg2[1, 3, Val{:weight}()] ≈ 0
+        dg3 = SimpleWeightedDiGraph{Int, Float64}(dg)
+        @test add_edge!(dg, 1, 4, 3.5)
+        @test dg[1, 4, Val{:weight}()] ≈ 3.5
+        @test dg3[1, 4, Val{:weight}()] ≈ 0
+        g1 = SimpleWeightedGraph{Int, Float64}(dg)
+        g2 = SimpleWeightedGraph(dg)
+        @test g1 == g2
+        @test ne(g1) == 5 # 1-2 1-3 2-3 3-4 4-1
+        @test g1[1, 3, Val{:weight}()] ≈ 2.5
+        
+        g = SimpleWeightedGraph(cycle_graph(5))
+        g2 = SimpleWeightedGraph(g)
+        @test g[1, 3, Val{:weight}()] ≈ 0
+        @test g2[1, 3, Val{:weight}()] ≈ 0
+        @test add_edge!(g, 1, 3, 2.5)
+        @test g[1, 3, Val{:weight}()] ≈ 2.5
+        @test g2[1, 3, Val{:weight}()] ≈ 0.0
+        g3 = SimpleWeightedDiGraph{Int, Float64}(g)
+        @test add_edge!(g, 1, 4, 3.5)
+        @test g[1, 4, Val{:weight}()] ≈ 3.5
+        @test g3[1, 4, Val{:weight}()] ≈ 0
+
+        # copy from undirected to directed
+        g = SimpleWeightedGraph(cycle_graph(4), 0.5)
+        dg = SimpleWeightedDiGraph(g)
+        @test g[1,3,Val{:weight}()] ≈ 0
+        add_edge!(g, 1, 3, 6.5)
+        @test g[1,3,Val{:weight}()] ≈ 6.5
+        @test dg[1,3,Val{:weight}()] ≈ 0
+
+        dg = SimpleWeightedDiGraph(cycle_digraph(4), 0.5)
+        @test dg[2, 1, Val{:weight}()] ≈ 0
+        add_edge!(dg, 2, 1, 0.6)
+        g = SimpleWeightedGraph(dg)
+        @test g[1, 2, Val{:weight}()] ≈ 1.1        
+        @test g[1, 3, Val{:weight}()] ≈ 0
+        @test g[2, 3, Val{:weight}()] ≈ 0.5
+    end
 end
