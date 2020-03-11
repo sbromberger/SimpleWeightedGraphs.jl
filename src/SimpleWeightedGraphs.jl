@@ -5,6 +5,7 @@ using LinearAlgebra
 using Markdown
 using SparseArrays
 
+using Base.Iterators
 import Base:
     convert, eltype, show, ==, Pair, Tuple, copy, length, issubset, zero
 
@@ -55,7 +56,6 @@ end
 
 # conversion to SparseMatrixCSC
 convert(::Type{SparseMatrixCSC{T, U}}, g::AbstractSimpleWeightedGraph) where T<:Real where U<:Integer = SparseMatrixCSC{T, U}(g.weights)
-
 
 
 
@@ -116,7 +116,7 @@ end
 
 function outneighbors(g::AbstractSimpleWeightedGraph, v::Integer)
     mat = g.weights
-    return view(mat.rowval, mat.colptr[v]:mat.colptr[v+1]-1)
+    return Iterators.filter(!iszero, view(mat.rowval, mat.colptr[v]:mat.colptr[v+1]-1))
 end
 
 get_weight(g::AbstractSimpleWeightedGraph, u::Integer, v::Integer) = g.weights[v, u]
