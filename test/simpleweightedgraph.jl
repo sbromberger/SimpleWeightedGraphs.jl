@@ -222,4 +222,12 @@ using SimpleWeightedGraphs
     @test SimpleDiGraph(SimpleWeightedDiGraph(cycle_graph(4))) == SimpleDiGraph(cycle_graph(4))
     @test SimpleGraph(SimpleWeightedGraph(path_graph(5))) == path_graph(5)
 
+    # test structural zeros.
+    g = SimpleWeightedDiGraph(path_digraph(5))
+    add_edge!(g, 2, 3, 5)
+    @test has_edge(g, 2, 3)
+    rem_edge!(g, 2, 3)
+    @test !has_edge(g, 2, 3)
+    @test SimpleWeightedEdge(2, 3) ∉ edges(g)
+    @test weights(g)[2, 3] == 0
 end
