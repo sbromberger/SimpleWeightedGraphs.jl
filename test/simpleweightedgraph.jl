@@ -329,4 +329,17 @@ using SimpleWeightedGraphs
         @test g[1, 3, Val{:weight}()] ≈ 0
         @test g[2, 3, Val{:weight}()] ≈ 0.5
     end
+
+    # test digraph construction
+    g = LightGraphs.path_digraph(4)
+    h = SimpleWeightedDiGraph(g)
+    @test collect(edges(g)) == collect(edges(h))
+
+    # test degrees
+    @test outdegree(h) == [1, 1, 1, 0]
+    for v in 1:nv(h)
+        @test outdegree(h, v) == outdegree(h)[v]
+        @test indegree(h, v) == indegree(h)[v]
+        @test degree(h, v) == outdegree(h, v) + indegree(h, v)
+    end
 end

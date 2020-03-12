@@ -117,6 +117,8 @@ function outneighbors(g::AbstractSimpleWeightedGraph, v::Integer)
     return Iterators.filter(!iszero, view(mat.rowval, mat.colptr[v]:mat.colptr[v+1]-1))
 end
 
+outdegree(g::AbstractSimpleWeightedGraph, v::Integer) = length(outneighbors(g, v).itr)
+
 get_weight(g::AbstractSimpleWeightedGraph, u::Integer, v::Integer) = g.weights[v, u]
 
 zero(g::T) where T<:AbstractSimpleWeightedGraph = T()
