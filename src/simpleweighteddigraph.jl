@@ -38,7 +38,7 @@ SimpleWeightedDiGraph{T,U}(g::SimpleWeightedDiGraph) where {T <: Integer, U <: R
     SimpleWeightedDiGraph(SparseMatrixCSC{U, T}(copy(g.weights)), permute=false)
 
 
-ne(g::SimpleWeightedDiGraph) = length(filter(!iszero, nonzeros(g.weights)))
+ne(g::SimpleWeightedDiGraph) = count(!iszero, nonzeros(g.weights))
 
 function SimpleWeightedDiGraph{T,U}(n::Integer = 0) where {T<:Integer, U<:Real}
     weights = spzeros(U, T, T(n), T(n))
