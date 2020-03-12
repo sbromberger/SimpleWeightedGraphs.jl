@@ -58,8 +58,6 @@ end
 convert(::Type{SparseMatrixCSC{T, U}}, g::AbstractSimpleWeightedGraph) where T<:Real where U<:Integer = SparseMatrixCSC{T, U}(g.weights)
 
 
-
-
 ### INTERFACE
 
 nv(g::AbstractSimpleWeightedGraph{T, U}) where T where U = T(size(g.weights, 1))
@@ -87,7 +85,7 @@ end
 
 has_vertex(g::AbstractSimpleWeightedGraph, v::Integer) = v in vertices(g)
 
-function rem_edge!(g::AbstractSimpleWeightedGraph{T, U}, u::Integer, v::Integer) where T where U
+function rem_edge!(g::AbstractSimpleWeightedGraph{T, U}, u::Integer, v::Integer) where {T, U}
     rem_edge!(g, edgetype(g)(T(u), T(v), one(U)))
 end
 
@@ -139,12 +137,15 @@ include("persistence.jl")
 const WGraph = SimpleWeightedGraph
 const WDiGraph = SimpleWeightedDiGraph
 
-SimpleWeightedDiGraph(g::SimpleWeightedGraph) = SimpleWeightedDiGraph(g.weights)
-SimpleWeightedDiGraph{T,U}(g::SimpleWeightedGraph) where T<:Integer where U<:Real =
-    SimpleWeightedDiGraph(SparseMatrixCSC{U, T}(g.weights))
+SimpleWeightedDiGraph(g::SimpleWeightedGraph) = SimpleWeightedDiGraph(copy(g.weights))
+function SimpleWeightedDiGraph{T, U}(g::SimpleWeightedGraph) where {T<:Integer, U<:Real}
+    return SimpleWeightedDiGraph(SparseMatrixCSC{U, T}(copy(g.weights)))
+end
 
 SimpleWeightedGraph(g::SimpleWeightedDiGraph) = SimpleWeightedGraph(g.weights .+ g.weights')
-SimpleWeightedGraph{T,U}(g::SimpleWeightedDiGraph) where T<:Integer where U<:Real =
-    SimpleWeightedGraph(SparseMatrixCSC{U, T}(g.weights .+ g.weights'))
+
+function SimpleWeightedGraph{T, U}(g::SimpleWeightedDiGraph) where {T<:Integer, U<:Real}
+    return SimpleWeightedGraph(SparseMatrixCSC{U, T}(g.weights .+ g.weights'))
+end
 
 end # module
