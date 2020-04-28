@@ -6,7 +6,7 @@
 Edge-Weighted Graphs for [LightGraphs.jl](https://github.com/JuliaGraphs/LightGraphs.jl).
 
 Usage:
-```
+```julia
 using LightGraphs, SimpleWeightedGraphs
 
 g = SimpleWeightedGraph(3)  # or use `SimpleWeightedDiGraph` for directed graphs
