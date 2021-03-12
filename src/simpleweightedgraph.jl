@@ -18,7 +18,7 @@ mutable struct SimpleWeightedGraph{T<:Integer, U<:Real} <: AbstractSimpleWeighte
 
 end
 
-ne(g::SimpleWeightedGraph) = nnz(g.weights) ÷ 2
+ne(g::SimpleWeightedGraph) = count(!iszero, nonzeros(g.weights)) ÷ 2
 
 SimpleWeightedGraph{T}(adjmx::SparseMatrixCSC{U, T}) where {T <: Integer, U <: Real} =
     SimpleWeightedGraph{T, U}(adjmx)
@@ -101,8 +101,8 @@ LightGraphs.SimpleGraph(g::SimpleWeightedGraph) = SimpleGraph(g.weights)
 
 edgetype(::SimpleWeightedGraph{T, U}) where {T<:Integer, U<:Real} = SimpleWeightedGraphEdge{T,U}
 
-edges(g::SimpleWeightedGraph) = (SimpleWeightedEdge(x[1], x[2], x[3]) for x in zip(findnz(triu(g.weights))...))
-weights(g::SimpleWeightedGraph) = g.weights
+edges(g::SimpleWeightedGraph) = Iterators.filter(!iszero ∘ weight, SimpleWeightedEdge(x[1], x[2], x[3]) for x in zip(findnz(triu(g.weights))...))
+weights(g::AbstractSimpleWeightedGraph) = g.weights
 inneighbors(g::SimpleWeightedGraph, x...) = outneighbors(g, x...)
 
 # add_edge! will overwrite weights.
