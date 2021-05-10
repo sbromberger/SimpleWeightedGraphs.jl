@@ -15,6 +15,7 @@ SimpleWeightedEdge(p::Pair) = SimpleWeightedEdge(p.first, p.second, one(Float64)
 SimpleWeightedEdge{T, U}(p::Pair) where T<:Integer where U <: Real = SimpleWeightedEdge(T(p.first), T(p.second), one(U))
 SimpleWeightedEdge{T, U}(t::NTuple{3}) where T<:Integer where U <: Real = SimpleWeightedEdge(T(t[1]), T(t[2]), U(t[3]))
 SimpleWeightedEdge{T, U}(t::NTuple{2}) where T<:Integer where U <: Real = SimpleWeightedEdge(T(t[1]), T(t[2]), one(U))
+SimpleWeightedEdge{T, U}(x::T, y::T) where T<:Integer where U<:Real = SimpleWeightedEdge(x, y, one(U))
 SimpleWeightedEdge(x, y) = SimpleWeightedEdge(x, y, one(Float64))
 eltype(e::T) where T<:AbstractSimpleWeightedEdge= eltype(src(e))
 
