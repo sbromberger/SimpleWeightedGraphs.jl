@@ -2,19 +2,21 @@ using SimpleWeightedGraphs
 
 @testset "SimpleWeightedGraphs" begin
     @info("Ignore warnings relating to adding and removing vertices and edges")
-    adjmx1 = [0 1 0; 1 0 1; 0 1 0] # SimpleWeightedGraph
-    adjmx2 = [0 1 0; 1 0 1; 1 1 0] # SimpleWeightedDiGraph
+    adjmx1 = [0 1 0; 1 1 1; 0 1 0] # SimpleWeightedGraph
+    adjmx2 = [0 1 0; 1 1 1; 1 1 0] # SimpleWeightedDiGraph
     # specific concrete generators - no need for loop
     @test @inferred(eltype(SimpleWeightedGraph())) == Int
     @test @inferred(eltype(SimpleWeightedGraph(adjmx1))) == Int
     @test_throws ErrorException SimpleWeightedGraph(adjmx2)
 
     @test @inferred(ne(SimpleWeightedGraph(path_digraph(5)))) == 4
+    @test @inferred(ne(SimpleWeightedGraph(adjmx1))) == 3
     @test @inferred(!is_directed(SimpleWeightedGraph))
 
     @test @inferred(eltype(SimpleWeightedDiGraph())) == Int
     @test @inferred(eltype(SimpleWeightedDiGraph(adjmx2))) == Int
     @test @inferred(ne(SimpleWeightedDiGraph(path_graph(5)))) == 8
+    @test @inferred(ne(SimpleWeightedDiGraph(adjmx2))) == 6
     @test @inferred(is_directed(SimpleWeightedDiGraph))
 
 
