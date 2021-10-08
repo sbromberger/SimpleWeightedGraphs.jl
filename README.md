@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/JuliaGraphs/SimpleWeightedGraphs.jl.svg?branch=master)](https://travis-ci.org/JuliaGraphs/SimpleWeightedGraphs.jl)
 [![codecov.io](http://codecov.io/github/JuliaGraphs/SimpleWeightedGraphs.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaGraphs/SimpleWeightedGraphs.jl?branch=master)
 
+**Project Status:** As of 8 October 2021 SimpleWeightedGraphs is no longer under active development. It will remain available on Github at [sbromberger/SimpleWeightedGraphs.jl](https://github.com/sbromberger/SimpleWeightedGraphs.jl). The JuliaGraphs organization will continue to maintain packages that use LightGraphs and transition development over the long term.
+
 Edge-Weighted Graphs for [LightGraphs.jl](https://github.com/JuliaGraphs/LightGraphs.jl).
 
 Usage:
