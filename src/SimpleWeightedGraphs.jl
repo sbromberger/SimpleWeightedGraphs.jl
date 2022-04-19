@@ -5,6 +5,7 @@ using LinearAlgebra
 using Markdown
 using SparseArrays
 
+using Base.Iterators
 import Base:
     convert, eltype, show, ==, Pair, Tuple, copy, length, issubset, zero
 
@@ -113,8 +114,10 @@ end
 
 function outneighbors(g::AbstractSimpleWeightedGraph, v::Integer)
     mat = g.weights
-    return view(mat.rowval, mat.colptr[v]:mat.colptr[v+1]-1)
+    return Iterators.filter(!iszero, view(mat.rowval, mat.colptr[v]:mat.colptr[v+1]-1))
 end
+
+outdegree(g::AbstractSimpleWeightedGraph, v::Integer) = length(outneighbors(g, v).itr)
 
 get_weight(g::AbstractSimpleWeightedGraph, u::Integer, v::Integer) = g.weights[v, u]
 

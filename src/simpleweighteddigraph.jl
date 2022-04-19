@@ -38,7 +38,7 @@ SimpleWeightedDiGraph{T,U}(g::SimpleWeightedDiGraph) where {T <: Integer, U <: R
     SimpleWeightedDiGraph(SparseMatrixCSC{U, T}(copy(g.weights)), permute=false)
 
 
-ne(g::SimpleWeightedDiGraph) = nnz(g.weights)
+ne(g::SimpleWeightedDiGraph) = count(!iszero, nonzeros(g.weights))
 
 function SimpleWeightedDiGraph{T,U}(n::Integer = 0) where {T<:Integer, U<:Real}
     weights = spzeros(U, T, T(n), T(n))
@@ -82,10 +82,11 @@ LightGraphs.SimpleDiGraph(g::SimpleWeightedDiGraph) = SimpleDiGraph(g.weights')
 
 edgetype(::SimpleWeightedDiGraph{T, U}) where T<:Integer where U<:Real = SimpleWeightedGraphEdge{T,U}
 
-edges(g::SimpleWeightedDiGraph) = (SimpleWeightedEdge(x[2], x[1], x[3]) for x in zip(findnz(g.weights)...))
+edges(g::SimpleWeightedDiGraph) = Iterators.filter(!iszero ∘ weight, SimpleWeightedEdge(x[2], x[1], x[3]) for x in zip(findnz(g.weights)...))
 weights(g::SimpleWeightedDiGraph) = g.weights'
 
-inneighbors(g::SimpleWeightedDiGraph, v::Integer) = g.weights[v,:].nzind
+inneighbors(g::SimpleWeightedDiGraph, v::Integer) = Iterators.filter(!iszero, g.weights[v,:].nzind)
+indegree(g::SimpleWeightedDiGraph, v::Integer) = length(inneighbors(g, v).itr)
 
 # add_edge! will overwrite weights.
 function add_edge!(g::SimpleWeightedDiGraph, e::SimpleWeightedGraphEdge)

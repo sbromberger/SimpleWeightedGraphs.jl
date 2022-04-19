@@ -64,7 +64,7 @@ using SimpleWeightedGraphs
         gc = copy(g)
         @test add_edge!(gc, 4, 1) && gc == SimpleWeightedGraph(cycle_graph(4))
 
-        @test @inferred(inneighbors(g, 2)) == @inferred(outneighbors(g, 2)) == @inferred(neighbors(g,2)) == [1,3]
+        @test @inferred(collect(inneighbors(g, 2))) == @inferred(collect(outneighbors(g, 2))) == @inferred(collect(neighbors(g,2))) == [1,3]
         @test @inferred(add_vertex!(gc))   # out of order, but we want it for issubset
         @test @inferred(g ⊆ gc)
         @test @inferred(has_vertex(gc, 5))
@@ -115,8 +115,8 @@ using SimpleWeightedGraphs
         @test SimpleWeightedEdge(2,3) in edges(g)
         @test !(SimpleWeightedEdge(3,2) in edges(g))
         @test @inferred(nv(g)) == 4
-        @test outneighbors(g, 2) == [3]
-        @test inneighbors(g, 2) == [1]
+        @test collect(outneighbors(g, 2)) == [3]
+        @test collect(inneighbors(g, 2)) == [1]
 
         @test @inferred(has_edge(g, 2, 3))
         @test @inferred(!has_edge(g, 3, 2))
@@ -130,8 +130,8 @@ using SimpleWeightedGraphs
         gc = @inferred(copy(g))
         @test @inferred(add_edge!(gc, 4, 1)) && gc == SimpleWeightedDiGraph(cycle_digraph(4))
 
-        @test @inferred(inneighbors(g, 2)) == [1]
-        @test @inferred(outneighbors(g, 2)) == @inferred(neighbors(g,2)) == [3]
+        @test @inferred(collect(inneighbors(g, 2))) == [1]
+        @test @inferred(collect(outneighbors(g, 2))) == @inferred(collect(neighbors(g,2))) == [3]
         @test @inferred(add_vertex!(gc))   # out of order, but we want it for issubset
         @test @inferred(g ⊆ gc)
         @test @inferred(has_vertex(gc, 5))
@@ -182,7 +182,7 @@ using SimpleWeightedGraphs
     @test @inferred(get_weight(g, 1, 2)) == 3
 
     g = SimpleWeightedDiGraph(path_graph(5), 4.0)
-    @test sum(weights(g)) == ne(g) * 4.0
+    @test sum(collect(weights(g)))== ne(g) * 4.0
 
     gx = Graph(4,3)
     for g in testsimplegraphs(gx)
@@ -221,6 +221,16 @@ using SimpleWeightedGraphs
 
     @test SimpleDiGraph(SimpleWeightedDiGraph(cycle_graph(4))) == SimpleDiGraph(cycle_graph(4))
     @test SimpleGraph(SimpleWeightedGraph(path_graph(5))) == path_graph(5)
+
+
+    # test structural zeros.
+    g = SimpleWeightedDiGraph(path_digraph(5))
+    add_edge!(g, 2, 3, 5)
+    @test has_edge(g, 2, 3)
+    rem_edge!(g, 2, 3)
+    @test !has_edge(g, 2, 3)
+    @test SimpleWeightedEdge(2, 3) ∉ edges(g)
+    @test weights(g)[2, 3] == 0
 
     @test SimpleWeightedGraph(cycle_graph(4)) == SimpleWeightedGraph(SimpleWeightedGraph(cycle_graph(4)))
     @test SimpleWeightedDiGraph(cycle_digraph(4)) == SimpleWeightedDiGraph(SimpleWeightedDiGraph(cycle_digraph(4)))
@@ -318,5 +328,18 @@ using SimpleWeightedGraphs
         @test g[1, 2, Val{:weight}()] ≈ 1.1        
         @test g[1, 3, Val{:weight}()] ≈ 0
         @test g[2, 3, Val{:weight}()] ≈ 0.5
+    end
+
+    # test digraph construction
+    g = LightGraphs.path_digraph(4)
+    h = SimpleWeightedDiGraph(g)
+    @test collect(edges(g)) == collect(edges(h))
+
+    # test degrees
+    @test outdegree(h) == [1, 1, 1, 0]
+    for v in 1:nv(h)
+        @test outdegree(h, v) == outdegree(h)[v]
+        @test indegree(h, v) == indegree(h)[v]
+        @test degree(h, v) == outdegree(h, v) + indegree(h, v)
     end
 end
